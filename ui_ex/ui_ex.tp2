@@ -1,0 +1,2344 @@
+BACKUP ~ui_ex/backup~
+SUPPORT ~Discords, G3(Gibberlings3 Official): https://discord.gg/yTzjMTb or Infinity Engine: https://discord.gg/0rvJmMgIV5FHQTWT @auiwqi~
+VERSION ~1~
+README ~ui_ex/ui_ex-readme.txt~
+
+ALWAYS
+	ACTION_IF !VARIABLE_IS_SET ~ui_ex_initialise~ BEGIN
+		INCLUDE ~ui_ex/lib/always.tph~
+		OUTER_SET ui_ex_initialise=1
+	END
+END
+
+LANGUAGE ~English~
+	~en_US~
+	~ui_ex/lang/en_US/prompts.tra~
+
+BEGIN ~Main UI~
+DESIGNATED 0
+
+ACTION_IF GAME_IS ~eet~ BEGIN
+	COPY ~ui_ex/uimenu/eet.menu~ ~override/ui.menu~
+	COPY ~ui_ex/worldmaps/y5wmeet.png~ ~override~
+END ELSE BEGIN ACTION_IF GAME_IS ~bgee~ BEGIN
+		COPY ~ui_ex/extralua/bg1.lua~ ~override/M_Y5BG1.lua~
+		COPY ~ui_ex/miscall~ ~override~
+		COPY ~ui_ex/uimenu/bg1.menu~ ~override/ui.menu~
+		COPY ~ui_ex/worldmaps/y5wmb1.png~ ~override~
+	END	ELSE BEGIN ACTION_IF GAME_IS ~bg2ee~ BEGIN
+			COPY ~ui_ex/extralua/bg2.lua~ ~override/M_Y5BG2.lua~
+			COPY ~ui_ex/miscall~ ~override~
+			COPY ~ui_ex/uimenu/bg2.menu~ ~override/ui.menu~
+			COPY ~ui_ex/worldmaps/y5wmb2.png~ ~override~
+		END
+	END
+END
+
+COPY ~ui_ex/portraitex/PLACEHOLDER~ ~override~
+COPY_EXISTING ~bgee.lua~ ~override~
+REPLACE_TEXTUALLY ~portraits\([a-zA-Z-0-9\=\,\{\}\'\_\"\\(\\)\/\&\;\:\?\!\$.\[ %TAB%%WNL%]\)*movies~ ~portraits =
+{
+	{'MPLACE0', 1},
+	{'FPLACE0', 2},
+}
+
+movies~ // removes all portraits and replaces them with searchable version
+
+//REPLACE_TEXTUALLY ~\({.+,.+[%TAB%]\)[0-9]+~ ~\10~ // removes default keybindings
+
+ACTION_IF !GAME_IS ~eet~ BEGIN
+COPY_EXISTING ~bgee.lua~ ~override~
+REPLACE_TEXTUALLY ~chapterBackgrounds\[0\][ %TAB%\=\"a-zA-Z-0-9]+~ ~--PLACEHOLDERCHAP~
+REPLACE_TEXTUALLY ~chapterBackgrounds\[[-0-9]+\][ %TAB%\=\"a-zA-Z-0-9]+[\"]~ ~~
+REPLACE_TEXTUALLY ~\(--PLACEHOLDERCHAP\)[%WNL%]+~ ~\1%WNL%~
+REPLACE_TEXTUALLY ~--PLACEHOLDERCHAP~ ~chapterBackgrounds[0] = "GUICHP0A"
+chapterBackgrounds[1] = "GUICHP1A"
+chapterBackgrounds[2] = "GUICHP2A"
+chapterBackgrounds[3] = "GUICHP3A"
+chapterBackgrounds[4] = "GUICHP4A"
+chapterBackgrounds[5] = "GUICHP5A"
+chapterBackgrounds[6] = "GUICHP6A"
+chapterBackgrounds[7] = "GUICHP7A"
+chapterBackgrounds[8] = "GUICHP1B"
+chapterBackgrounds[9] = "GUICHP2B"
+chapterBackgrounds[10] = "GUICHP3B"
+chapterBackgrounds[11] = "GUICHP4B"
+chapterBackgrounds[12] = "GUICHP5B"
+chapterBackgrounds[13] = "GUICHP6B"
+chapterBackgrounds[20] = "BPEND"
+chapterBackgrounds[52] = "GUIDRM2"
+chapterBackgrounds[53] = "GUIDRM3"
+chapterBackgrounds[54] = "GUIDRM4"
+chapterBackgrounds[55] = "GUIDRM5"
+chapterBackgrounds[56] = "GUIDRM6"
+chapterBackgrounds[57] = "GUIDRM7"
+chapterBackgrounds[58] = "ARRIVE"
+chapterBackgrounds[59] = "LEAVE"
+chapterBackgrounds[100] = "GUICHP6B"~
+
+END
+
+
+ACTION_IF FILE_EXISTS_IN_GAME ~exampl2.spl~ BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+	REPLACE_TEXTUALLY ~--EXTEXT1~ ~~~~~--EEex_AddKeyPressedListener(function(key)
+--    if key == EEex_GetKeyFromName("space") and EEex_IsKeyDown(EEex_GetKeyFromName("Left Ctrl")) then
+--        if Infinity_IsMenuOnStack('START') then
+--			Infinity_PopMenu('START')
+--			Infinity_PushMenu('START')
+--		end
+--    end
+--end)
+
+--EEex_AddKeyPressedListener(function(key)
+--    if key == EEex_GetKeyFromName("space") and EEex_IsKeyDown(EEex_GetKeyFromName("Left Ctrl")) then
+--		if (e:GetActiveEngine() == optionsScreen) or Infinity_IsMenuOnStack('LOAD') then
+--			startEngine:SetEngineState(0)
+--			e:SelectEngine(startEngine)
+--			EEex_MessageBox('Here')
+--		end
+--	end
+--end)
+
+EEex_AddKeyPressedListener(function(key)
+    if key == EEex_GetKeyFromName("Z") and Infinity_IsMenuOnStack('WORLD_MESSAGES') and Infinity_TextEditHasFocus() == 0 then
+		dragMessagesYx()
+	end
+	if key == EEex_GetKeyFromName("Z") and Infinity_IsMenuOnStack('WORLD_DIALOG') and Infinity_TextEditHasFocus() == 0	 then
+		dragMessagesYxD()
+	end
+	
+	if key == EEex_GetKeyFromName("Z") and showMPOverlay() and Infinity_TextEditHasFocus() == 0	 then
+		dragMessagesYxM()
+	end
+
+end)
+
+EEex_AddKeyReleasedListener(function(key)
+	if key == EEex_GetKeyFromName("Z") and Infinity_IsMenuOnStack('WORLD_MESSAGES') and Infinity_TextEditHasFocus() == 0 then
+		dragMessagesYxz()
+	end
+	if key == EEex_GetKeyFromName("Z") and Infinity_IsMenuOnStack('WORLD_DIALOG') and Infinity_TextEditHasFocus() == 0 then
+		dragMessagesYxzD()
+	end
+	
+	if key == EEex_GetKeyFromName("Z") and showMPOverlay() and Infinity_TextEditHasFocus() == 0 then
+		dragMessagesYxzM()
+	end
+
+end)~~~~~
+
+REPLACE_TEXTUALLY ~--EXTEXT2~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('miscInfoSearch') and miscInfoVar ~= '' then
+			EEex_SetListScroll('miscList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT3~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('consoleEdit') and consoleEdit ~= '' then
+			EEex_SetListScroll('consoleList', 0)
+		end		
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT4~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('StoreSearch') and StoreSearch ~= '' then
+			EEex_SetListScroll('buyList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT5~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('GroupSearch') and GroupSearch ~= '' then
+			EEex_SetListScroll('sellList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT6~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('ImportSearch') and ImportSearch ~= '' then
+			EEex_SetListScroll('importList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT7~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('PortraitSearch') and PortraitSearch ~= '' then
+			EEex_SetListScroll('portraitList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT8~ ~~~~~actionAlt
+		"
+			if Infinity_TextEditHasFocus('mpSearch') and mpSearch ~= '' then
+				EEex_SetListScroll('gameList', 0)
+			end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT9~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('JournalSearch') and JournalSearch ~= '' then
+			EEex_SetListScroll('journalList', 0)
+		end
+		"~~~~~
+		
+END ELSE BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+
+REPLACE_TEXTUALLY ~--EXTEXT2~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('miscInfoSearch') and miscInfoVar ~= '' then
+			Infinity_SetScrollTop('miscList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT3~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('consoleEdit') and consoleEdit ~= '' then
+			Infinity_SetScrollTop('consoleList', 0)
+			if (key_pressed ~= 8) then
+				scrollCMenu = 1
+			end
+		end	
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT4~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('StoreSearch') and StoreSearch ~= '' then
+			Infinity_SetScrollTop('buyList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT5~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('GroupSearch') and GroupSearch ~= '' then
+			Infinity_SetScrollTop('sellList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT6~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('ImportSearch') and ImportSearch ~= '' then
+			Infinity_SetScrollTop('importList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT7~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('PortraitSearch') and PortraitSearch ~= '' then
+			Infinity_SetScrollTop('portraitList', 0)
+		end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT8~ ~~~~~actionAlt
+		"
+			if Infinity_TextEditHasFocus('mpSearch') and mpSearch ~= '' then
+				Infinity_SetScrollTop('gameList', 0)
+			end
+		"~~~~~
+REPLACE_TEXTUALLY ~--EXTEXT9~ ~~~~~actionAlt
+		"
+		if Infinity_TextEditHasFocus('JournalSearch') and JournalSearch ~= '' then
+			Infinity_SetScrollTop('journalList', 0)
+		end
+		"~~~~~
+		
+END
+
+ACTION_IF (MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~410~) BEGIN
+
+COPY_EXISTING ~ui.menu~ ~override~
+
+REPLACE_TEXTUALLY ~--REP PLACEMENT~ ~~~~~function storeRepCheck()
+local curRep = string.match(characters[currentID].proficiencies.reputation.current, "%d+")
+local repAmount = 1
+
+	if curRep == '1' then
+		repAmount = 15000
+	elseif curRep == '2' then
+		repAmount = 12000         
+	elseif curRep == '3' then
+		repAmount = 10000
+	elseif curRep == '4' then
+		repAmount = 6000
+	elseif curRep == '5' then
+		repAmount = 500
+	elseif curRep == '6' then
+		repAmount = 300
+	elseif curRep == '7' then
+		repAmount = 150
+	elseif curRep == '8' then
+		repAmount = 900
+	elseif curRep == '9' then
+		repAmount = 1500
+	elseif curRep == '10' then
+		repAmount = 3000
+	elseif curRep == '11' then
+		repAmount = 5000
+	elseif curRep == '12' then
+		repAmount = 8000
+	elseif curRep == '13' then
+		repAmount = 10000
+	elseif curRep == '14' then
+		repAmount = 15000
+	elseif curRep == '15' then
+		repAmount = 20000
+	elseif curRep == '16' then
+		repAmount = 25000
+	elseif curRep == '17' then
+		repAmount = 50000
+	elseif curRep == '18' then
+		repAmount = 30
+	elseif curRep == '19' then
+		repAmount = 30
+	elseif curRep == '20' then
+		repAmount = 30
+	end
+return repAmount
+
+end~~~~~
+
+END ELSE BEGIN
+
+COPY_EXISTING ~ui.menu~ ~override~
+
+	REPLACE_TEXTUALLY ~--REP PLACEMENT~ ~~~~~function storeRepCheck()
+local curRep = string.match(characters[currentID].proficiencies.reputation.current, "%d+")
+local repAmount = 1
+
+	if curRep == '1' then
+		repAmount = 1500
+	elseif curRep == '2' then
+		repAmount = 1200         
+	elseif curRep == '3' then
+		repAmount = 1000
+	elseif curRep == '4' then
+		repAmount = 600
+	elseif curRep == '5' then
+		repAmount = 500
+	elseif curRep == '6' then
+		repAmount = 300
+	elseif curRep == '7' then
+		repAmount = 150
+	elseif curRep == '8' then
+		repAmount = 100
+	elseif curRep == '9' then
+		repAmount = 200
+	elseif curRep == '10' then
+		repAmount = 300
+	elseif curRep == '11' then
+		repAmount = 500
+	elseif curRep == '12' then
+		repAmount = 800
+	elseif curRep == '13' then
+		repAmount = 1000
+	elseif curRep == '14' then
+		repAmount = 1500
+	elseif curRep == '15' then
+		repAmount = 2000
+	elseif curRep == '16' then
+		repAmount = 2500
+	elseif curRep == '17' then
+		repAmount = 5000
+	elseif curRep == '18' then
+		repAmount = 30
+	elseif curRep == '19' then
+		repAmount = 30
+	elseif curRep == '20' then
+		repAmount = 30
+	end
+return repAmount
+
+end~~~~~
+
+END
+
+ACTION_IF MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~330~ BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+	REPLACE_TEXTUALLY ~--STR PLACEMENT~ ~~~~~strchargen = {
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_STR','TABLE_TOHIT','TABLE_DMG','TABLE_BREAK','TABLE_CAR'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'b_','n_c','n_b','b_p','c_'},
+{'c_','n_c','n_a','c_p','e_'},
+{'d_','n_b','n_a','e_p','ae_'},
+{'e_','n_b','n_a','g_p','ae_'},
+{'f_','n_a','q_','h_p','cq_'},
+{'g_','n_a','q_','i_p','cq_'},
+{'h_','q_','q_','aq_p','eq_'},
+{'i_','q_','q_','ae_p','eq_'},
+{'aq_','q_','q_','ae_p','gq_'},
+{'aa_','q_','q_','bq_p','gq_'},
+{'ab_','q_','q_','bq_p','iq_'},
+{'ac_','q_','q_','be_p','iq_'},
+{'ad_','q_','q_','be_p','abq_'},
+{'ae_','q_','q_','cq_p','abq_'},
+{'af_','q_','a_','cq_p','aeq_'},
+{'ag_','a_','a_','ce_p','agq_'},
+{'ah_','a_','b_','dq_p','bqq_'},
+{'ai_','c_','g_','ee_p','eqq_'},
+{'bq_','c_','h_','fq_p','fqq_'},
+{'ba_','d_','i_','gq_p','gqq_'},
+{'bb_','d_','aq_','hq_p','hqq_'},
+{'bc_','e_','aa_','iq_p','aqqq_'},
+{'bd_','f_','ab_','ie_p','abqq_'},
+{'be_','g_','ad_','aqq_p','afqq_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_ESTR','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_STR','TABLE_TOHIT','TABLE_DMG','TABLE_BREAK','TABLE_CAR'},
+{'qa_n_eq','a_','a_','b_p','aq_'},
+{'ea_n_ge','a_','a_','d_p','eq_'},
+{'gf_n_iq','a_','b_','f_p','hq_'},
+{'ia_n_ii','a_','c_','g_p','abq_'},
+{'ah_n_qq','b_','d_','aq_p','bqq_'},
+}~~~~~
+END ELSE BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+	REPLACE_TEXTUALLY ~--STR PLACEMENT~ ~~~~~strchargen = {
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_STR','TABLE_TOHIT','TABLE_DMG','TABLE_BREAK','TABLE_CAR'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'b_','n_c','n_b','b_p','c_'},
+{'c_','n_c','n_a','c_p','e_'},
+{'d_','n_b','n_a','d_p','ae_'},
+{'e_','n_b','n_a','e_p','ae_'},
+{'f_','n_a','q_','f_p','cq_'},
+{'g_','n_a','q_','g_p','cq_'},
+{'h_','q_','q_','h_p','eq_'},
+{'i_','q_','q_','i_p','eq_'},
+{'aq_','q_','q_','aq_p','gq_'},
+{'aa_','q_','q_','aa_p','gq_'},
+{'ab_','q_','q_','ab_p','iq_'},
+{'ac_','q_','q_','ac_p','iq_'},
+{'ad_','q_','q_','ad_p','abq_'},
+{'ae_','q_','q_','ae_p','abq_'},
+{'af_','q_','a_','ah_p','aeq_'},
+{'ag_','a_','a_','ah_p','agq_'},
+{'ah_','a_','b_','bq_p','bqq_'},
+{'ai_','c_','g_','eq_p','eqq_'},
+{'bq_','c_','h_','ee_p','fqq_'},
+{'ba_','d_','i_','fq_p','gqq_'},
+{'bb_','d_','aq_','fe_p','hqq_'},
+{'bc_','e_','aa_','gq_p','aqqq_'},
+{'bd_','f_','ab_','ge_p','abqq_'},
+{'be_','g_','ad_','hq_p','afqq_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_ESTR','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'CS_','CS_','CS_','CS_','CS_'},
+{'TABLE_STR','TABLE_TOHIT','TABLE_DMG','TABLE_BREAK','TABLE_CAR'},
+{'qa_n_eq','a_','a_','b_p','aq_'},
+{'ea_n_ge','a_','a_','d_p','eq_'},
+{'gf_n_iq','a_','b_','f_p','hq_'},
+{'ia_n_ii','a_','c_','g_p','abq_'},
+{'ah_n_qq','b_','d_','aq_p','bqq_'},
+}~~~~~
+END
+
+ACTION_IF (MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~320~) BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+	REPLACE_TEXTUALLY ~--CHA PLACEMENT~ ~chachargen = {
+{'CS_','CS_','CS_'},
+{'CS_','CS_','CS_'},
+{'TABLE_CHA','TABLE_MERCHANT','TABLE_READJ'},
+{'CS_','CS_','CS_'},
+{'b_','n_iq_p','n_i'},
+{'c_','n_hq_p','n_h'},
+{'d_','n_gq_p','n_g'},
+{'e_','n_fq_p','n_f'},
+{'f_','n_eq_p','n_e'},
+{'g_','n_dq_p','n_d'},
+{'h_','n_bq_p','n_b'},
+{'i_','n_aq_p','n_a'},
+{'aq_','n_e_p','q_'},
+{'aa_','n_e_p','q_'},
+{'ab_','n_','q_'},
+{'ac_','n_','a_'},
+{'ad_','n_','b_'},
+{'ae_','b_p','c_'},
+{'af_','c_p','d_'},
+{'ag_','d_p','d_'},
+{'ah_','e_p','e_'},
+{'ai_','g_p','h_'},
+{'bq_','aq_p','i_'},
+{'ba_','aa_p','aq_'},
+{'bb_','ab_p','aa_'},
+{'bc_','ac_p','ab_'},
+{'bd_','ad_p','ac_'},
+{'be_','ae_p','ad_'}
+}~
+END ELSE BEGIN
+	COPY_EXISTING ~ui.menu~ ~override~
+	REPLACE_TEXTUALLY ~--CHA PLACEMENT~ ~chachargen = {
+{'CS_','CS_','CS_'},
+{'CS_','CS_','CS_'},
+{'TABLE_CHA','TABLE_MERCHANT','TABLE_READJ'},
+{'CS_','CS_','CS_'},
+{'b_','n_','n_i'},
+{'c_','n_','n_h'},
+{'d_','n_','n_g'},
+{'e_','n_','n_f'},
+{'f_','n_','n_e'},
+{'g_','n_','n_d'},
+{'h_','n_','n_b'},
+{'i_','n_','n_a'},
+{'aq_','n_','q_'},
+{'aa_','n_','q_'},
+{'ab_','n_','q_'},
+{'ac_','n_','a_'},
+{'ad_','n_','b_'},
+{'ae_','n_','c_'},
+{'af_','e_p','d_'},
+{'ag_','aq_p','d_'},
+{'ah_','ae_p','e_'},
+{'ai_','bq_p','h_'},
+{'bq_','be_p','i_'},
+{'ba_','be_p','aq_'},
+{'bb_','be_p','aa_'},
+{'bc_','be_p','ab_'},
+{'bd_','be_p','ac_'},
+{'be_','be_p','ad_'}
+}~
+END
+
+//for different languages, replace 'Hide In Shadows' and 'Stealth' with it's variant
+
+COPY_EXISTING ~ui.menu~ ~override~
+REPLACE_TEXTUALLY ~--CHARGEN INFORMATION~ ~function modifiedChargenInfo()
+	local amount = string.match(chargen.information, 'Hide In Shadows[:]?%s+(%d+)') or 0
+	local target = string.match(chargen.information, 'Stealth[:]?%s+(%d+)') or 0
+	local value = amount + target
+	local text = chargen.information:gsub('(Stealth[:]?%s+)%d+','%1'..value..'')
+	local text = text:gsub('Hide In Shadows[:]?%s+%d+\n','',1)
+	return text
+end~
+
+RANDOM_SEED intentionally_invalid_string
+
+COPY_EXISTING_REGEXP GLOB ~^.+\.sto$~ ~override~
+
+READ_LONG 0x08 validinn
+
+PATCH_IF (validinn = 2) BEGIN
+
+	CLEAR_ARRAY inn_room_map1
+	CLEAR_ARRAY inn_room_map2
+	CLEAR_ARRAY inn_room_map3
+	CLEAR_ARRAY inn_room_map4
+	
+	SET inserted = 0
+    SET inn1 = RANDOM (5 9)
+    SET inn2 = RANDOM (11 14)
+    SET inn3 = RANDOM (26 30)
+    SET inn4 = RANDOM (55 63)
+	
+	DEFINE_ASSOCIATIVE_ARRAY inn_room_map1 BEGIN
+		~Y5INN1~ => ~%inn1%~
+	END
+	DEFINE_ASSOCIATIVE_ARRAY inn_room_map2 BEGIN
+		~Y5INN2~ => ~%inn2%~
+	END
+	DEFINE_ASSOCIATIVE_ARRAY inn_room_map3 BEGIN
+		~Y5INN3~ => ~%inn3%~
+	END
+	DEFINE_ASSOCIATIVE_ARRAY inn_room_map4 BEGIN
+		~Y5INN4~ => ~%inn4%~
+	END
+	
+	WRITE_LONG 0x10 (THIS BOR BIT5)
+	READ_LONG 0x5c roomtype
+	
+	PATCH_IF ((roomtype BAND BIT0) != 0) BEGIN 
+		PATCH_PHP_EACH inn_room_map1 AS innspl => cost BEGIN
+			READ_LONG 0x70 cure_off 
+			READ_LONG 0x74 cure_num 
+			SET insert_point = (cure_off + (0x0c * cure_num)) 
+			INSERT_BYTES insert_point 0x0c
+			WRITE_EVALUATED_ASCII (insert_point) ~%innspl%~
+			WRITE_LONG  (insert_point + 0x08) (cost * 5)
+			SET inserted += 1
+			WRITE_LONG 0x74 (THIS + inserted)
+			PATCH_FOR_EACH offset IN 0x2c 0x34 0x4c BEGIN
+				READ_LONG offset off
+				PATCH_IF (off >= cure_off) BEGIN
+					WRITE_LONG offset (THIS + (0x0c * inserted))
+					SET inserted = 0
+				END
+			END
+		END
+	END
+	PATCH_IF ((roomtype BAND BIT1) != 0) BEGIN
+		PATCH_PHP_EACH inn_room_map2 AS innspl => cost BEGIN
+			READ_LONG 0x70 cure_off
+			READ_LONG 0x74 cure_num
+			SET insert_point = (cure_off + (0x0c * cure_num))
+			INSERT_BYTES insert_point 0x0c
+			WRITE_EVALUATED_ASCII (insert_point) ~%innspl%~ 
+			WRITE_LONG  (insert_point + 0x08) (cost * 5)
+			SET inserted += 1  
+			WRITE_LONG 0x74 (THIS + inserted)
+			PATCH_FOR_EACH offset IN 0x2c 0x34 0x4c BEGIN 
+				READ_LONG offset off
+				PATCH_IF (off >= cure_off) BEGIN
+					WRITE_LONG offset (THIS + (0x0c * inserted))
+					SET inserted = 0
+				END
+			END
+		END
+	END
+	PATCH_IF ((roomtype BAND BIT2) != 0) BEGIN
+		PATCH_PHP_EACH inn_room_map3 AS innspl => cost BEGIN
+			READ_LONG 0x70 cure_off
+			READ_LONG 0x74 cure_num
+			SET insert_point = (cure_off + (0x0c * cure_num))
+			INSERT_BYTES insert_point 0x0c
+			WRITE_EVALUATED_ASCII (insert_point) ~%innspl%~ 
+			WRITE_LONG  (insert_point + 0x08) (cost * 5)
+			SET inserted += 1  
+			WRITE_LONG 0x74 (THIS + inserted)
+			PATCH_FOR_EACH offset IN 0x2c 0x34 0x4c BEGIN 
+				READ_LONG offset off
+				PATCH_IF (off >= cure_off) BEGIN
+					WRITE_LONG offset (THIS + (0x0c * inserted))
+					SET inserted = 0
+				END
+			END
+		END
+	END
+	PATCH_IF ((roomtype BAND BIT3) != 0) BEGIN
+		PATCH_PHP_EACH inn_room_map4 AS innspl => cost BEGIN
+			READ_LONG 0x70 cure_off
+			READ_LONG 0x74 cure_num
+			SET insert_point = (cure_off + (0x0c * cure_num))
+			INSERT_BYTES insert_point 0x0c
+			WRITE_EVALUATED_ASCII (insert_point) ~%innspl%~ 
+			WRITE_LONG  (insert_point + 0x08) (cost * 5)
+			SET inserted += 1  
+			WRITE_LONG 0x74 (THIS + inserted)
+			PATCH_FOR_EACH offset IN 0x2c 0x34 0x4c BEGIN 
+				READ_LONG offset off
+				PATCH_IF (off >= cure_off) BEGIN
+					WRITE_LONG offset (THIS + (0x0c * inserted))
+				END
+			END
+		END
+	END
+END
+BUT_ONLY
+  
+COPY ~ui_ex/portraits~ ~override~
+COPY ~ui_ex/misc~ ~override~
+COPY ~ui_ex/innspells~ ~override~
+
+COPY_EXISTING ~Y5INN1.spl~ ~override~
+	SAY NAME1 ~Peasant~
+COPY_EXISTING ~Y5INN2.spl~ ~override~
+	SAY NAME1 ~Merchant~
+COPY_EXISTING ~Y5INN3.spl~ ~override~
+	SAY NAME1 ~Noble~
+COPY_EXISTING ~Y5INN4.spl~ ~override~
+	SAY NAME1 ~Royal~
+
+OUTER_SET name = RESOLVE_STR_REF(~Peasant: 
+
+While an adequate place to rest, rooms of this type offer little more than a roof over one's head. Recuperative benefits will likely be minimal. You get what you pay for.~)
+APPEND ~speldesc.2da~ ~Y5INN1 %name%~
+
+OUTER_SET name2 = RESOLVE_STR_REF(~Merchant: 
+
+A favorite of the frugal business traveler, rooms of this type are basic but comfortable. A good solid mattress and clean linen, for when one must awaken presentable, but not so pampered as to promote oversleeping.~)
+APPEND ~speldesc.2da~ ~Y5INN2 %name2%~
+
+OUTER_SET name3 = RESOLVE_STR_REF(~Noble: 
+
+These rooms are of excellent quality at a somewhat reasonable price, and a definite luxury for those accustomed to sleeping under an open sky. None but the most pampered dandy would have complaints with these accomodations.
+~)
+APPEND ~speldesc.2da~ ~Y5INN3 %name3%~
+
+OUTER_SET name4 = RESOLVE_STR_REF(~Royal: 
+
+A truly luxurious experience at an equally exorbitant price. Beds filled with the softest of down, draped with the finest Calimshan silks and linens. Nearly as restful as a week in a lesser room, through who but royalty could afford the cost?~)
+APPEND ~speldesc.2da~ ~Y5INN4 %name4%~
+
+OUTER_SET text = 999999
+COPY_EXISTING ~movidesc.2da~ ~override~
+REPLACE_TEXTUALLY ~\(BGSUNRIS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Baldur's Gate Day/Night~
+
+PRETTY_PRINT_2DA
+
+//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////TABLE REMOVALS
+//////////////////////////////////////////////////////////////////
+ACTION_IF !DIRECTORY_EXISTS ~./weidu_external/backup/stratagems~ THEN BEGIN 
+COPY_EXISTING ~ui.menu~ ~override~
+REPLACE_TEXTUALLY ~--SCS PLACEMENT TABLE~ ~if SCSRemoved == 0 then
+			removeOneVarFromList(consoleOtherList, 'SCS Difficulty')
+			removeOneVarFromList(consoleOtherList, 'SCS MAX-ON')
+			removeOneVarFromList(consoleOtherList, 'SCS MAX-OFF')
+			SCSRemoved = 1
+		end~
+END
+//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////ADDITIONAL COMMANDS
+//////////////////////////////////////////////////////////////////
+
+ACTION_IF FILE_EXISTS_IN_GAME ~dw#diff.cre~ BEGIN
+	COPY ~ui_ex/commands/scsgoff.txt~ ~./~
+	COPY ~ui_ex/commands/scsgon.txt~ ~./~
+END
+
+COPY ~ui_ex/commands/spwi.txt~ ~./~
+
+ACTION_IF !DIRECTORY_EXISTS ~./EEex/backup~ BEGIN
+	COPY ~ui_ex/commands/BaldursGate.bat~ ~./run.bat~
+END ELSE BEGIN
+	COPY ~ui_ex/commands/EEex.bat~ ~./run.bat~
+END
+
+//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////TEXT CHANGES
+//////////////////////////////////////////////////////////////////
+
+ACTION_IF GAME_IS ~eet~ BEGIN
+
+COPY_EXISTING ~bgractxt.2da~ ~override~
+REPLACE_TEXTUALLY ~\(HUMAN[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~HUMANS: Humans are the predominant race in Faerûn. Humans rule most of the significant empires and kingdoms in the Forgotten Realms. They are the most social and tolerant of races, excepting perhaps the halflings. Humans may advance as any class and are also the only race that can dual-class. Humans may not multi-class.
+
+Note: When dual-classing, the first class will remain at the level the dual-class was started, and is no longer able to progressed with. The character will lose access to those abilities until their secondary class surpasses the first in levels. From then on, the character will only progress in the second classes levels compared to multi-classing, which progresses all the character's levels at once; In addiition to sharing the XP across all classes.
+
+
+~
+
+COPY_EXISTING ~sodrace.2da~ ~override~
+REPLACE_TEXTUALLY ~\(HUMAN[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~HUMANS: Humans are the predominant race in Faerûn. Humans rule most of the significant empires and kingdoms in the Forgotten Realms. They are the most social and tolerant of races, excepting perhaps the halflings. Humans may advance as any class and are also the only race that can dual-class. Humans may not multi-class.
+
+Note: When dual-classing, the first class will remain at the level the dual-class was started, and is no longer able to progressed with. The character will lose access to those abilities until their secondary class surpasses the first in levels. From then on, the character will only progress in the second classes levels compared to multi-classing, which progresses all the character's levels at once; In addiition to sharing the XP across all classes.
+
+
+~
+
+PRETTY_PRINT_2DA
+
+END
+
+COPY_EXISTING ~L_EN_US.LUA~ ~override~
+
+
+REPLACE_TEXTUALLY ~"See characters' action messages in the dialogue window.",~ ~"See characters' spell cast/attack messages in the dialogue window.",~
+REPLACE_TEXTUALLY ~"Ambient Volume",~ ~"Ambience",~
+REPLACE_TEXTUALLY ~"Don't Melee After Depleting One Ammo Stack",~ ~"Melee with Ranged",~
+REPLACE_TEXTUALLY ~"Center on Party Member",~ ~"Center",~
+REPLACE_TEXTUALLY ~"Character Attacked",~ ~"Attacked",~
+REPLACE_TEXTUALLY ~"Character Death",~ ~"Death",~
+REPLACE_TEXTUALLY ~"Character Hit",~ ~"Hit",~
+REPLACE_TEXTUALLY ~"Character Injured",~ ~"Injured",~
+REPLACE_TEXTUALLY ~"Character's Target Destroyed",~ ~"Target Kill",~
+REPLACE_TEXTUALLY ~"Classic Selection Circles",~ ~"Classic Circles",~
+REPLACE_TEXTUALLY ~"Colored Selection Circles",~ ~"Colored Circles",~
+REPLACE_TEXTUALLY ~"See combat information messages in the dialogue window.",~ ~"See combat damage/healing messages in the dialogue window.",~
+REPLACE_TEXTUALLY ~"Combat Information",~ ~"Combat",~
+REPLACE_TEXTUALLY ~"COMMAND SOUNDS",~ ~"COMMANDS",~
+REPLACE_TEXTUALLY ~"CREATE CHARACTER",~ ~"",~
+REPLACE_TEXTUALLY ~"This slider controls the difficulty level of the game.\n  INSANE (far right): All opponents do double damage against the party.\n  HARD (middle right): All opponents do 50% more damage against the party.\n  CORE RULES (middle): AD&D Second Edition rules apply. Hit Point rolls are random, party members can permanently die, spell learning has a chance to fail, and opponents do full damage.\n  NORMAL (middle left): All Hit Point rolls are maximum, party members cannot permanently die, all spells are learned automatically, and opponents do three-quarters damage against the party.\n  EASY (far left): All Hit Point rolls are maximum, party members gain +6 luck and cannot permanently die, all spells are learned automatically, and opponents do half damage against the party.",~ ~"This slider controls the difficulty level of the game.\n \nINSANE: All opponents do double damage against the party.\n \nHARD: All opponents do 50% more damage against the party.\n \nCORE RULES: AD&D Second Edition rules apply. Hit Point rolls are random, party members can permanently die, spell learning has a chance to fail, and opponents do full damage.\n \nNORMAL: All Hit Point rolls are maximum, party members cannot permanently die, all spells are learned automatically, and opponents do three-quarters damage against the party.\n \nEASY: All Hit Point rolls are maximum, party members gain +6 luck and cannot permanently die, all spells are learned automatically, and opponents do half damage against the party.",~
+REPLACE_TEXTUALLY ~"Difficulty:",~ ~"Difficulty",~
+REPLACE_TEXTUALLY ~"No Cosmetic Attacks",~ ~"Cosmetic Attacks",~
+REPLACE_TEXTUALLY ~"Display Options",~ ~"Display",~
+REPLACE_TEXTUALLY ~"More Confirmation Prompts",~ ~"Confirmation Prompts",~
+REPLACE_TEXTUALLY ~"End of Round",~ ~"Rounds",~
+REPLACE_TEXTUALLY ~"Enemy Sighted",~ ~"Sighted",~
+REPLACE_TEXTUALLY ~"Hardware Mouse Cursor",~ ~"Mouse Cursor",~
+REPLACE_TEXTUALLY ~"Rest Until Healed",~ ~"Heal on Rest",~
+REPLACE_TEXTUALLY ~"Highlight Selected Sprite",~ ~"Highlight Sprite",~
+REPLACE_TEXTUALLY ~"Keyboard Scroll Speed",~ ~"Keyboard Scrl.",~
+REPLACE_TEXTUALLY ~"Locator Feedback",~ ~"Party Alerts",~
+REPLACE_TEXTUALLY ~"Marker Feedback",~ ~"Ellipsoids",~
+REPLACE_TEXTUALLY ~"Max HP on Level Up",~ ~"Max HP Levels",~
+REPLACE_TEXTUALLY ~"See other types of messages in the dialogue window.",~ ~"See other character messages (e.g. successful stealth messages) in the dialogue window.",~
+REPLACE_TEXTUALLY ~"Miscellaneous",~ ~"Misc",~
+REPLACE_TEXTUALLY ~"Mouse Scroll Speed",~ ~"Mouse Scrl.",~
+REPLACE_TEXTUALLY ~"Character Movement Sounds",~ ~"Character Movements",~
+REPLACE_TEXTUALLY ~"Movie Volume",~ ~"Cutscenes",~ 
+REPLACE_TEXTUALLY ~"Create a character in this slot",~ ~"Create character",~
+REPLACE_TEXTUALLY ~"Edit Character",~ ~"Edit",~
+REPLACE_TEXTUALLY ~"View Details",~ ~"View",~
+REPLACE_TEXTUALLY ~"Music Volume",~ ~"Music",~
+REPLACE_TEXTUALLY ~"Nearest Neighbor Scaling",~ ~"Near Neighbor Scaling",~
+REPLACE_TEXTUALLY ~"No Difficulty-Based Damage Increase",~ ~"Difficulty-Damage",~
+REPLACE_TEXTUALLY ~"Scale User Interface",~ ~"Scale Interface",~
+REPLACE_TEXTUALLY ~"SELECTION SOUNDS",~ ~"Selections",~
+REPLACE_TEXTUALLY ~"See character selection text in the dialogue window.",~ ~"See controlled party member selection text (goes with \"character subtitles and selections\" sound option) in the dialogue window.",~
+REPLACE_TEXTUALLY ~"Selection Text",~ ~"Group",~
+REPLACE_TEXTUALLY ~"Sound Effects Volume",~ ~"Effects",~
+REPLACE_TEXTUALLY ~"Allow Scrolling Out Of Bounds",~ ~"Bounds Scrolling",~
+REPLACE_TEXTUALLY ~"Spell Cast",~ ~"Cast",~
+REPLACE_TEXTUALLY ~"See character state messages in the dialogue window.",~ ~"See character state (buff/debuff) messages in the dialogue window.",~
+REPLACE_TEXTUALLY ~"State Changes",~ ~"States",~
+REPLACE_TEXTUALLY ~"To-Hit Rolls",~ ~"Thac0",~
+REPLACE_TEXTUALLY ~"Trap Found",~ ~"Trap",~
+REPLACE_TEXTUALLY ~"Voice Volume",~ ~"Voices",~
+REPLACE_TEXTUALLY ~"Weapon Unusable",~ ~"Weapon",~
+REPLACE_TEXTUALLY ~"Area Map Background",~ ~"Map Background",~
+
+REPLACE_TEXTUALLY ~"Game Type",~ ~"Version",~ 
+REPLACE_TEXTUALLY ~"Game Name",~ ~"Game",~ 
+REPLACE_TEXTUALLY ~"GAMEPLAY",~ ~"Settings",~ 
+REPLACE_TEXTUALLY ~"Give XP",~ ~"EXPERIENCE",~
+REPLACE_TEXTUALLY ~"Give Gold",~ ~"GOLD",~
+REPLACE_TEXTUALLY ~"Not Password Protected",~ ~"NO.PW",~
+REPLACE_TEXTUALLY ~"Local Network Game",~ ~"LC.CN",~
+REPLACE_TEXTUALLY ~"Direct Connection",~ ~"DT.CN",~
+REPLACE_TEXTUALLY ~NO_DAMAGE_INCREASE_LABEL = "No Difficulty-Based Damage Changes (strongly recommended)",~ ~NO_DAMAGE_INCREASE_LABEL = "Difficulty-Damage",~
+REPLACE_TEXTUALLY ~ASSIGN_KEYS_BUTTON = "ASSIGN KEYS",~ ~ASSIGN_KEYS_BUTTON = "KEYBINDS",~
+REPLACE_TEXTUALLY ~ASSIGN_KEYS_TITLE = "Assign Keys",~ ~ASSIGN_KEYS_TITLE = "Keybinds",~
+REPLACE_TEXTUALLY ~MULTIPLAYER_DIFFICULTY_LABEL = "Difficulty",~ ~MULTIPLAYER_DIFFICULTY_LABEL = "Difficulty:",~
+PATCH_IF !(MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~506~ AND MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~507~) THEN BEGIN
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -11 AC, and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL_BGEE = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -11 AC, and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL_BG2EE = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -11 AC, and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+END ELSE BEGIN
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -3 through -11 AC(based on level), and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL_BGEE = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -3 through -11 AC(based on level), and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+	REPLACE_TEXTUALLY ~\(DIFFICULTY_DESCRIPTION_LEGACYOFBHAAL_BG2EE = \)[.]+~ ~\1"Non-party members gain the following: Base HP bonus of *3+80, +5 thac0 and saving throws, +12 levels(stats only, additional spells are not gained), -3 through -11 AC(based on level), and +1 APR. Damage taken is increased by 100% and party members can permanently die. Summons gain *2+20 HP.",~
+END
+REPLACE_TEXTUALLY ~\(MULTIPLAYER_CREATING_CHARACTER_MESSAGE\).*~ ~\1 = "<PLAYER_NAME_1><SEPERATOR>creating character...",~
+
+REPLACE_TEXTUALLY ~}~ ~~
+
+
+// new additions
+APPEND ~L_EN_US.LUA~ ~	SEARCH_FOR_LOCATION = "SEARCH FOR LOCATION",~
+APPEND ~L_EN_US.LUA~ ~	ENTER_TEXT = "...",~
+APPEND ~L_EN_US.LUA~ ~	MISC_CONSOLE = "misc",~
+APPEND ~L_EN_US.LUA~ ~	CUTSCENE_BUTTON = "Cutscenes",~
+APPEND ~L_EN_US.LUA~ ~	QUICKLOOT_LABEL = "QUICKLOOT",~
+APPEND ~L_EN_US.LUA~ ~	QUICKLOOT_DESC = "Displays items on the ground, which allows them to be directly picked up rather than having to individually click each loot container.",~
+APPEND ~L_EN_US.LUA~ ~	ENTER_TEXT_LUA = "ENTER LUA TEXT HERE",~
+APPEND ~L_EN_US.LUA~ ~	MAIN_MENU = "MAIN MENU",~
+APPEND ~L_EN_US.LUA~ ~	PLAYER_NAME = "PLAYER NAME",~
+APPEND ~L_EN_US.LUA~ ~	GAME_SEARCH = "search for game...",~
+APPEND ~L_EN_US.LUA~ ~	SESSION_NAME = "SESSION NAME",~
+APPEND ~L_EN_US.LUA~ ~	MP_GAME_PASSWORD = "PASSWORD",~
+APPEND ~L_EN_US.LUA~ ~	REFRESH_LIST = "REFRESH",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_SEARCH = "search journal...",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_ENTRY = "Add entry...",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_DELETE = "DELETE ENTRY",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_ALL = "All",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_EDIT = "Edit",~
+APPEND ~L_EN_US.LUA~ ~	JOURNAL_ADD = "Add",~
+APPEND ~L_EN_US.LUA~ ~	MP_JOIN_ABLE = "+",~
+APPEND ~L_EN_US.LUA~ %	MP_JOIN_NOT = "~",%
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR = "STR",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_ESTR = "Fighters, Paladins and Rangers (non-halfings) are able to receive 'exceptional strength', this adds the listed additional bonus to the pre-existing strength gain. 19+ STR does not gain the exceptional strength bonus.",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_TOHIT = "Thac0",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DMG = "Damage",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_BREAK = "Bash",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_CAR = "Weight",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX = "DEX",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_REAC = "Reaction",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_AC = "Armor+",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_CON = "CON",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_HP = "HpGain",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WAR = "HpWar",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_REG = "Regen",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_FATIGUE = "Fatigue",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS = "WIS",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_SPELLG = "Spellgain(1-7)",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_INT = "INT",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_SCR = "Scribe",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_MAZE = "Maze",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_SPELLS = "Spells",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_LORE = "Lore",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_CHA = "CHA",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_READJ = "Dialogue+",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_MERCHANT = "Trade",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_CLASS = "Classes",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_SECONDARY = "Secondary",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_REQ = "Attributes",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_FI = "Fighter",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_CL = "Cleric",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_WA = "Wizard",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_TH = "Thief",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_TSD = "Thief:SD",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_DR = "Druid",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_RA = "Ranger",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR_W = "STR 15, WIS 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR_WC = "STR 15, WIS 17, CHA 17*TN",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR_I = "STR 15, INT 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR_D = "STR 15, DEX 17-LG",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_STR_DW = "STR 15, DEX 15, WIS 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_S = "DEX 15, STR 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_W = "DEX 15, WIS 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_I = "DEX 15, INT 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_SDCS = "DEX 15, CHA 15, STR 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_SDCSW = "DEX 15, CHA 15, STR 15, WIS 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_DEX_SDCSI = "DEX 15, CHA 15, STR 15, INT 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_INT_S = "INT 15, STR 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_INT_W = "INT 15, WIS 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_INT_D = "INT 15, DEX 17-LG",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS_S = "WIS 15, STR 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS_SD = "WIS 17, STR 17, DEX 17*Good",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS_I = "WIS 15, INT 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS_D = "WIS 15, DEX 17",~
+APPEND ~L_EN_US.LUA~ ~	TABLE_WIS_CS = "WIS 15, CHA 15, STR 17",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_TABLE = "TN = True Neutral\nLG = Lawful Good\nSD = Shadowdancer\n* = Required alignment.\n- = Cannot be this alignment.",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_LABEL = "Dual Info",~
+APPEND ~L_EN_US.LUA~ ~	DUAL_HUMAN_DESC = "DUAL-CLASSING: The first class will remain at the level the dual-class was started, and is no longer able to progressed with. The character will lose access to those abilities until their secondary class surpasses the first in levels. From then on, the character will only progress in the second classes levels compared to multi-classing, which progresses all the character's levels at once; In addiition to sharing the XP across all classes.",~
+
+APPEND ~L_EN_US.LUA~ ~	CS_ = "",~
+APPEND ~L_EN_US.LUA~ ~	n_bq = "-20",~
+APPEND ~L_EN_US.LUA~ ~	n_aq = "-10",~
+APPEND ~L_EN_US.LUA~ ~	n_i = "-9",~
+APPEND ~L_EN_US.LUA~ ~	n_h = "-8",~
+APPEND ~L_EN_US.LUA~ ~	n_g = "-7",~
+APPEND ~L_EN_US.LUA~ ~	n_f = "-6",~
+APPEND ~L_EN_US.LUA~ ~	n_e = "-5",~
+APPEND ~L_EN_US.LUA~ ~	n_d = "-4",~
+APPEND ~L_EN_US.LUA~ ~	n_c = "-3",~
+APPEND ~L_EN_US.LUA~ ~	n_b = "-2",~
+APPEND ~L_EN_US.LUA~ ~	n_a = "-1",~
+APPEND ~L_EN_US.LUA~ ~	q_ = "0",~
+APPEND ~L_EN_US.LUA~ ~	a_ = "1",~
+APPEND ~L_EN_US.LUA~ ~	b_ = "2",~
+APPEND ~L_EN_US.LUA~ ~	c_ = "3",~
+APPEND ~L_EN_US.LUA~ ~	d_ = "4",~
+APPEND ~L_EN_US.LUA~ ~	e_ = "5",~
+APPEND ~L_EN_US.LUA~ ~	f_ = "6",~
+APPEND ~L_EN_US.LUA~ ~	g_ = "7",~
+APPEND ~L_EN_US.LUA~ ~	h_ = "8",~
+APPEND ~L_EN_US.LUA~ ~	i_ = "9",~
+APPEND ~L_EN_US.LUA~ ~	aq_ = "10",~
+APPEND ~L_EN_US.LUA~ ~	aa_ = "11",~
+APPEND ~L_EN_US.LUA~ ~	ab_ = "12",~
+APPEND ~L_EN_US.LUA~ ~	ac_ = "13",~
+APPEND ~L_EN_US.LUA~ ~	ad_ = "14",~
+APPEND ~L_EN_US.LUA~ ~	ae_ = "15",~
+APPEND ~L_EN_US.LUA~ ~	af_ = "16",~
+APPEND ~L_EN_US.LUA~ ~	ag_ = "17",~
+APPEND ~L_EN_US.LUA~ ~	ah_ = "18",~
+APPEND ~L_EN_US.LUA~ ~	ai_ = "19",~
+APPEND ~L_EN_US.LUA~ ~	bq_ = "20",~
+APPEND ~L_EN_US.LUA~ ~	ba_ = "21",~
+APPEND ~L_EN_US.LUA~ ~	bb_ = "22",~
+APPEND ~L_EN_US.LUA~ ~	bc_ = "23",~
+APPEND ~L_EN_US.LUA~ ~	bd_ = "24",~
+APPEND ~L_EN_US.LUA~ ~	be_ = "25",~
+APPEND ~L_EN_US.LUA~ ~	cq_ = "30",~
+APPEND ~L_EN_US.LUA~ ~	ce_ = "35",~
+APPEND ~L_EN_US.LUA~ ~	dq_ = "40",~
+APPEND ~L_EN_US.LUA~ ~	ii_ = "99",~
+APPEND ~L_EN_US.LUA~ ~	n_aqq_p = "-100%",~
+APPEND ~L_EN_US.LUA~ ~	n_iq_p = "-90%",~
+APPEND ~L_EN_US.LUA~ ~	n_hq_p = "-80%",~
+APPEND ~L_EN_US.LUA~ ~	n_gq_p = "-70%",~
+APPEND ~L_EN_US.LUA~ ~	n_fq_p = "-60%",~
+APPEND ~L_EN_US.LUA~ ~	n_eq_p = "-50%",~
+APPEND ~L_EN_US.LUA~ ~	n_dq_p = "-40%",~
+APPEND ~L_EN_US.LUA~ ~	n_cq_p = "-30%",~
+APPEND ~L_EN_US.LUA~ ~	n_bq_p = "-20%",~
+APPEND ~L_EN_US.LUA~ ~	n_ae_p = "-15%",~
+APPEND ~L_EN_US.LUA~ ~	n_ad_p = "-14%",~
+APPEND ~L_EN_US.LUA~ ~	n_ac_p = "-13%",~
+APPEND ~L_EN_US.LUA~ ~	n_ab_p = "-12%",~
+APPEND ~L_EN_US.LUA~ ~	n_aa_p = "-11%",~
+APPEND ~L_EN_US.LUA~ ~	n_aq_p = "-10%",~
+APPEND ~L_EN_US.LUA~ ~	n_i_p = "-9%",~
+APPEND ~L_EN_US.LUA~ ~	n_h_p = "-8%",~
+APPEND ~L_EN_US.LUA~ ~	n_g_p = "-7%",~
+APPEND ~L_EN_US.LUA~ ~	n_f_p = "-6%",~
+APPEND ~L_EN_US.LUA~ ~	n_e_p = "-5%",~
+APPEND ~L_EN_US.LUA~ ~	n_d_p = "-4%",~
+APPEND ~L_EN_US.LUA~ ~	n_c_p = "-3%",~
+APPEND ~L_EN_US.LUA~ ~	n_b_p = "-2%",~
+APPEND ~L_EN_US.LUA~ ~	n_a_p = "-1%",~
+APPEND ~L_EN_US.LUA~ ~	a_p = "1%",~
+APPEND ~L_EN_US.LUA~ ~	b_p = "2%",~
+APPEND ~L_EN_US.LUA~ ~	c_p = "3%",~
+APPEND ~L_EN_US.LUA~ ~	d_p = "4%",~
+APPEND ~L_EN_US.LUA~ ~	e_p = "5%",~
+APPEND ~L_EN_US.LUA~ ~	f_p = "6%",~
+APPEND ~L_EN_US.LUA~ ~	g_p = "7%",~
+APPEND ~L_EN_US.LUA~ ~	h_p = "8%",~
+APPEND ~L_EN_US.LUA~ ~	i_p = "9%",~
+APPEND ~L_EN_US.LUA~ ~	aq_p = "10%",~
+APPEND ~L_EN_US.LUA~ ~	aa_p = "11%",~
+APPEND ~L_EN_US.LUA~ ~	ab_p = "12%",~
+APPEND ~L_EN_US.LUA~ ~	ac_p = "13%",~
+APPEND ~L_EN_US.LUA~ ~	ad_p = "14%",~
+APPEND ~L_EN_US.LUA~ ~	ae_p = "15%",~
+APPEND ~L_EN_US.LUA~ ~	af_p = "16%",~
+APPEND ~L_EN_US.LUA~ ~	ag_p = "17%",~
+APPEND ~L_EN_US.LUA~ ~	ah_p = "18%",~
+APPEND ~L_EN_US.LUA~ ~	ai_p = "19%",~
+APPEND ~L_EN_US.LUA~ ~	bq_p = "20%",~
+APPEND ~L_EN_US.LUA~ ~	be_p = "25%",~
+APPEND ~L_EN_US.LUA~ ~	cq_p = "30%",~
+APPEND ~L_EN_US.LUA~ ~	ce_p = "35%",~
+APPEND ~L_EN_US.LUA~ ~	dq_p = "40%",~
+APPEND ~L_EN_US.LUA~ ~	de_p = "45%",~
+APPEND ~L_EN_US.LUA~ ~	eq_p = "50%",~
+APPEND ~L_EN_US.LUA~ ~	ee_p = "55%",~
+APPEND ~L_EN_US.LUA~ ~	fq_p = "60%",~
+APPEND ~L_EN_US.LUA~ ~	fe_p = "65%",~
+APPEND ~L_EN_US.LUA~ ~	gq_p = "70%",~
+APPEND ~L_EN_US.LUA~ ~	ge_p = "75%",~
+APPEND ~L_EN_US.LUA~ ~	hq_p = "80%",~
+APPEND ~L_EN_US.LUA~ ~	he_p = "85%",~
+APPEND ~L_EN_US.LUA~ ~	iq_p = "90%",~
+APPEND ~L_EN_US.LUA~ ~	ie_p = "95%",~
+APPEND ~L_EN_US.LUA~ ~	if_p = "96%",~
+APPEND ~L_EN_US.LUA~ ~	ig_p = "97%",~
+APPEND ~L_EN_US.LUA~ ~	ih_p = "98%",~
+APPEND ~L_EN_US.LUA~ ~	ii_p = "99%",~
+APPEND ~L_EN_US.LUA~ ~	aqq_p = "100%",~
+APPEND ~L_EN_US.LUA~ ~	cq_ = "30",~
+APPEND ~L_EN_US.LUA~ ~	eq_ = "50",~
+APPEND ~L_EN_US.LUA~ ~	gq_ = "70",~
+APPEND ~L_EN_US.LUA~ ~	hq_ = "80",~
+APPEND ~L_EN_US.LUA~ ~	iq_ = "90",~
+APPEND ~L_EN_US.LUA~ ~	abq_ = "120",~
+APPEND ~L_EN_US.LUA~ ~	aeq_ = "150",~
+APPEND ~L_EN_US.LUA~ ~	agq_ = "170",~
+APPEND ~L_EN_US.LUA~ ~	bqq_ = "200",~
+APPEND ~L_EN_US.LUA~ ~	eqq_ = "500",~
+APPEND ~L_EN_US.LUA~ ~	fqq_ = "600",~
+APPEND ~L_EN_US.LUA~ ~	gqq_ = "700",~
+APPEND ~L_EN_US.LUA~ ~	hqq_ = "800",~
+APPEND ~L_EN_US.LUA~ ~	aqqq_ = "1000",~
+APPEND ~L_EN_US.LUA~ ~	abqq_ = "1200",~
+APPEND ~L_EN_US.LUA~ ~	afqq_ = "1600",~
+APPEND ~L_EN_US.LUA~ ~	n_ = "-",~
+APPEND ~L_EN_US.LUA~ ~	qa_n_eq = "01-50",~
+APPEND ~L_EN_US.LUA~ ~	ea_n_ge = "51-75",~
+APPEND ~L_EN_US.LUA~ ~	gf_n_iq = "76-90",~
+APPEND ~L_EN_US.LUA~ ~	ia_n_ii = "91-99",~
+APPEND ~L_EN_US.LUA~ ~	ah_n_qq = "18-00",~
+APPEND ~L_EN_US.LUA~ ~	a_S_fq_SEC = "1/60s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_eq_SEC = "1/50s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_dq_SEC = "1/40s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_cq_SEC = "1/30s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_bq_SEC = "1/20s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_aq_SEC = "1/10s",~
+APPEND ~L_EN_US.LUA~ ~	a_S_aq_SEC = "1/10s",~
+APPEND ~L_EN_US.LUA~ ~	wis_ac = "1,-,-,-,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_ae = "2,-,-,-,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_af = "2,1,-,-,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_ag = "2,2,-,-,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_ah = "2,2,1,-,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_ai = "2,2,1,1,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_bq = "3,3,1,2,-,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_ba = "3,3,1,3,-,-,-",~	
+APPEND ~L_EN_US.LUA~ ~	wis_bb = "3,3,2,4,3,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_bc = "3,3,2,4,4,-,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_bd = "3,3,2,4,4,2,-",~
+APPEND ~L_EN_US.LUA~ ~	wis_be = "3,3,2,4,4,3,1",~
+APPEND ~L_EN_US.LUA~ ~	opt_a = "Quickloot option",~
+APPEND ~L_EN_US.LUA~ ~	opt_b = "Casting AoE option",~
+APPEND ~L_EN_US.LUA~ ~	opt_c = "Debug Mode option",~
+APPEND ~L_EN_US.LUA~ ~	opt_d = "UI Edit option",~
+APPEND ~L_EN_US.LUA~ ~	opt_e = "3E Sneak option",~
+APPEND ~L_EN_US.LUA~ ~	opt_f = "Critical Effects option",~
+APPEND ~L_EN_US.LUA~ ~	opt_g = "Disable Movies option",~
+APPEND ~L_EN_US.LUA~ ~	opt_h = "Search Map option",~
+APPEND ~L_EN_US.LUA~ ~	opt_i = "Dynamic Map option",~
+APPEND ~L_EN_US.LUA~ ~	opt_aq = "Tab Icon option",~
+APPEND ~L_EN_US.LUA~ ~	opt_aa = "Debug Title",~
+APPEND ~L_EN_US.LUA~ ~	opt_ab = "No Pause option",~
+APPEND ~L_EN_US.LUA~ ~	opt_ac = "Lua Console option",~
+APPEND ~L_EN_US.LUA~ ~	opt_ad = "Strref option",~
+APPEND ~L_EN_US.LUA~ ~	opt_ae = "Combat Info option",~
+APPEND ~L_EN_US.LUA~ ~	opt_af = "Function Binds",~
+APPEND ~L_EN_US.LUA~ ~	opt_ag = "Multiplayer Chat replacement",~
+APPEND ~L_EN_US.LUA~ ~	opt_ah = "Disable Map option",~
+APPEND ~L_EN_US.LUA~ ~	opt_ai = "opt_ai",~
+APPEND ~L_EN_US.LUA~ ~	opt_bq = "opt_bq",~
+
+APPEND ~L_EN_US.LUA~ ~	CAST_AREA_LABEL = "Cast Area",~
+APPEND ~L_EN_US.LUA~ ~	CAST_AREA_DESC = "Requires game reload to take effect.\n\nThis will display the range that a spell has in an AoE.",~
+APPEND ~L_EN_US.LUA~ ~	OPTDEBUG_LABEL = "Debugging",~
+APPEND ~L_EN_US.LUA~ ~	OPTDEBUG_DESC = "All of the following options require a game restart to take effect unless otherwise listed.\n\nThe following options are mostly for debugging or modding purposes only.",~
+APPEND ~L_EN_US.LUA~ ~	LUA_LABEL = "Lua Console",~
+APPEND ~L_EN_US.LUA~ ~	LUA_DESC = "Does not require game restart or reload.\n\nEnables the console menu via pressing 'Delete' in any menu.",~
+APPEND ~L_EN_US.LUA~ ~	DEBUG_LABEL = "Debug Mode",~
+APPEND ~L_EN_US.LUA~ ~	DEBUG_DESC = "Debug mode allows access to different key functions as follows:\nCTRL+Space: This toggle is depreciated, and has been replaced with Lua Console.\nCTRL+1: Change armor level frames.\nCTRL+2: Fade screen to black.\nCTRL+3: Fade screen to normal.\nCTRL+4:Highlight background-interactive objects.\nCTRL+6: Next .cre sequence.\nCTRL+7: Previous .cre sequence\nCTRL+C: Displays end epilogue for characters.\nCTRL+F: Turn the highlighted character.\nCTRL+J: Teleport to cursor position.\nCTRL+K: Remove hovered character from party.\nCTRL+M: Displays all related debug information in chat log.\nCTRL+Q: Hovered .cre will join the group.\nCTRL+R: Heals hovered character.\nCTRL+X: Extended position coordinates.\nCTRL+Y: Inflicts damage on the .cre but will not kill the .cre if it has MINHP items or effects.",~
+APPEND ~L_EN_US.LUA~ ~	UIEDIT_LABEL = "UI Edit Mode",~
+APPEND ~L_EN_US.LUA~ ~	UIEDIT_DESC = "This will allow you to do three things:\n\nFirst, it will let you enter 'Edit Mode' on the game’s user interface by pressing F11 on your keyboard. With Edit Mode, you can drag objects around the screen and place them exactly where you want them to be.\n\nSecond, it will let you preview changes you make to UI.menu without having to restart the game, by pressing F5(this applies if directly editing the UI.menu rather than moving elements with F11).\n\nFinally, if you hover over an element, you'll see exactly what line in UI.menu defines that element. This is profoundly helpful when making changes that require you to change the code.",~
+APPEND ~L_EN_US.LUA~ ~	C_ESNEAK_LABEL = "3E Sneak",~
+APPEND ~L_EN_US.LUA~ ~	C_ESNEAK_DESC =	"Requires game reload to take effect.\n\nAllows use of AD&D 3rd Edition sneak attack rules. Backstabbing no longer applies, instead the player receives increased damage while behind the target.\n\nDue to how the game engine was made, enemies will receive this bonus regardless of if they are behind the target.",~
+APPEND ~L_EN_US.LUA~ ~	NOPAUSE_LABEL = "Disallow Pause",~
+APPEND ~L_EN_US.LUA~ ~	NOPAUSE_DESC =  "Prevents the game from being able be paused, will allow unpausing of the game if auto-pause or other variants cause the game to pause.",~
+APPEND ~L_EN_US.LUA~ ~	PROV_LABEL = "Prevent Overkill",~
+APPEND ~L_EN_US.LUA~ ~	PROV_DESC = "Turning this effect on will display overkill effects on all .cres. This is required to be turned on for opcode #295 to effectively work; as it conflicts with the engine otherwise.\n\nWhen an enemy receives more than 10 damage past 0 hit points, this will cause them to be overkilled. Sometimes this will cause the loss of loot depending on the damaging effect. When this happens to a party member, it will permanently remove them from the game.\n\nCombined with opcode #295, this will prevent party members being able to be permanently removed unless affected by a stone or freezing death.",~
+APPEND ~L_EN_US.LUA~ ~	CRIT_LABEL = "Critical Effects",~
+APPEND ~L_EN_US.LUA~ ~	CRIT_DESC = "Requires game reload to take effect.\n\nThis option will allow the screen to 'shake' from critcal hits when turned on.",~
+APPEND ~L_EN_US.LUA~ ~	MOVIE_LABEL = "Disable Movies",~
+APPEND ~L_EN_US.LUA~ ~	MOVIE_DESC = "Requires game restart to take effect.\n\nWill prevent any movies from playing.",~
+APPEND ~L_EN_US.LUA~ ~	SEARCH_LABEL = "Search Map",~
+APPEND ~L_EN_US.LUA~ ~	SEARCH_DESC = "Requires game reload to take effect.\n\nControls whether holding down SHIFT will show an overlay of the static search map for the current area.",~
+APPEND ~L_EN_US.LUA~ ~	DYNAMIC_LABEL = "Dynamic Map",~
+APPEND ~L_EN_US.LUA~ ~	DYNAMIC_DESC = "Requires game reload to take effect.\n\nControls whether holding down CTRL will show an overlay of dynamic search map regions, such as blocked doorways or the personal space of creatures.",~
+APPEND ~L_EN_US.LUA~ ~	TABICON_LABEL = "Tab Info",~
+APPEND ~L_EN_US.LUA~ ~	TABICON_DESC = "Requires game reload to take effect.\n\nThis option will reveal more interactive regions when pressing the TAB key.",~
+APPEND ~L_EN_US.LUA~ ~	FRAMESLDR_LABEL = "Framerate",~
+APPEND ~L_EN_US.LUA~ ~	FRAMESLDR_DESC = "Allows changing of the framerate that the game operates on, this can potentially unsync the game audio. Max framerate is 60 FPS. Increments in 10 FPS. Normal framerate is 30 FPS.",~
+APPEND ~L_EN_US.LUA~ ~	ACTIONSLDR_LABEL = "Actions Performed",~
+APPEND ~L_EN_US.LUA~ ~	ACTIONSLDR_DESC = "This slider will display small icons next to a character's sprite of the currently performed action.\n\nDISABLED: Never show actions.\nLOW: Only for allies paused.\nMEDIUM: Only for allies.\nHIGH**: For all creatures when paused.\nMAXIMUM**: For all creatures.\n\n**: Requires Debug Mode.",~
+APPEND ~L_EN_US.LUA~ ~	STRREF_LABEL = "String References",~
+APPEND ~L_EN_US.LUA~ ~	STRREF_DESC = "Requires game restart to take effect.\n\nDisplays the string references (strref) constantly through game restarts. This will display the associated text number located in the dialog.tlk file.",~
+APPEND ~L_EN_US.LUA~ ~	COMINFO_LABEL = "Combat Info",~
+APPEND ~L_EN_US.LUA~ ~	COMINFO_DESC = "Requires game reload to take effect.\n\nFull thac0 display will be displayed in the combat log.",~
+APPEND ~L_EN_US.LUA~ ~	FUNCB_LABEL = "Function Binds",~
+APPEND ~L_EN_US.LUA~ ~	FUNCB_DESC = "Does not require game restart or reload.\n\nEnhances the regular version of F5, allows refreshing of menus and rescaling regardless of what menu it is in. Variables will not be lost with this and refreshing edits of UI.MENU will still work.\n\nF7 Prevents Ctrl related binds from working while in debug mode.\nF8 Quicksave, regardless of combat.\nF9 Rests all characters.\nF10 will print the active engine, current screen, and all menus on stack.\nF12 will reset the menu stack for `STACK_MENU` to work properly, this only works on `worldScreen` or `startEngine`.\n\nThis is not required for UI Edit Mode.",~
+APPEND ~L_EN_US.LUA~ ~	NEWMP_LABEL = "Chat Windows",~
+APPEND ~L_EN_US.LUA~ ~	NEWMP_DESC = "Extends the chat overlays to the following menus: 'INVENTORY', 'CHARGEN', 'STORE_CHOOSER', and 'CHARGEN_PROFICIENCIES'. For single player games, the window is present in: 'INVENTORY', and 'STORE_CHOOSER'.\n\nThese menus have separately stored settings to the regular combatLog if wanting to have one extended and one not. The regular combatLog will still appear with this setting off.",~
+APPEND ~L_EN_US.LUA~ ~	NOMAP_LABEL = "Disable Maps",~
+APPEND ~L_EN_US.LUA~ ~	NOMAP_DESC = "Prevents maps from being able to be used, unless only transitioning from area to area or via spell usage. This option is meant to make the game more immersive.",~
+
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_LABEL = "Misc Info",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCq = "This list contains various descriptions for things throughout the game, use the search bar below to refine shown options.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCa = "\n\nAttacks(1d20): All rolls within the game are rolled via dice, these dice roll between 1-20 unless otherwise stated. Avoiding an ability is based on the roll. If the target saves at 10, rolling anything above 10 will not be avoided, and anything lower will.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCb = "\n\nArmor Class(or AC): Chance for a physical attack to miss, does not affect damage reduction.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCc = "\n\nThac0: This stands for, 'to hit armor class zero'. Your current thac0 will always be minused by 20 to see the lowest Armor Class(AC) you can hit. With 10 thac0 this would be, [10 - (20) = -10] or [thac0 - (20) = AC]. Implying the lowest AC able to be hit is -10.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCd = "\n\nReputation: Range of 1-20, affects store prices and NPC interactions.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCe = "\n\nCast Time: How quickly a spell will be cast. 1 cast time is equal to .6 seconds.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCf = "\n\nMage: When leveling, mages receive addition memorization slots based off their intelligence.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCg = "\n\nPriest: Receives additional memorization slots based off wisdom.",~ 
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCh = "\n\nSpells: The character is able to cast spells based off the total amount of spells memorized within the spell slots. This is able to be done once per game day.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCi = "\n\nHour: Lasts 5 minutes and 1 game hour.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCaq = "\n\nRound: One round lasts 6 seconds, and 72 game seconds. This also designates the amount of actions being able to be performed, some actions have their own rounds.\n\nAttack: All physical attacks.\nSpell: All actions including spells, innate abilities, or potions.\nClass: Thieving, Find/Disarm Traps, Turn Undead, Shamanic Dance, Tracking, and Bard Song.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCaa = "\n\nTurn: One turn lasts 60 seconds and 12 game minutes.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCab = "\n\nAttacks Per Round: Also known as APR is how many attacks will happen during 1 round. Max APR possible is 5. Special spells and abilities allow the cap to exceed to 10. Only one attack will ever be made with the off-hand weapon per round(if equipped) unless 5+ APR is had, any additional APR will then go to the main-hand.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCac = "\n\nEnchantment: Determines whether or not a target will be effected by a weapons damage, assuming they have immunity to that enchantment level.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCad = "\n\nSpeed Factor: This determines how 'quickly' an attack happens during a round. 1 speed factor is equal to .6 seconds. If the target has more than 1 APR then this will be reduced accordinly based off the APR. A factor of 5 equates to 3, with an APR of 2, this attack now happens at the 1.5 second mark, which will not happen again for 3 more seconds.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCae = "\n\nSaving Throws: Spells and attacks can modify saving throws, whereas a Save vs. Spell: 5 vs an ability with a (-2) modifier will make that roll require a 7 instead of 5.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCaf = "\n\nSpacebar: Allows pausing and unpausing the game.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCag = "\n\nLuck: There are two types of luck, stacking and non-stacking. Luck effects the following rolls; attack, damage, healing spells, spell damage(receiving only), on-hit effects, party member attack movements while IN combat only, thieving skills aside from detect illusions and pick pocketing. Luck modifiers work as such, 1d20 becomes 3d20 with 2 luck in terms of damage. There is also an interaction with the spell Mirror Image, 1 luck will prevent the mage from ever being hit first; If negative luck is less than the image amount, (or luck is 0) ... Chance to bypass is (luck + 1) divided by (images + 1), if negative luck exceeds the mirror image amount then the mage will always be hit. This modifier will overall benefit most rolls, besides critical hits and misses.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCah = "\n\nCritcal Hit: This will automatatically hit, normally a roll of 20 is a critical hit. There are however modifiers that allow critical hits to happen on rolls below 20.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCai = "\n\nCritical Miss: When rolling a 1, the attack will automatically miss.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCbq = "\n\nDamage: Damage rolls are determiend by dice size. 1d20 simply means a dice between 1-20 will be rolled once; therefore there is a 5% chance that 10 damage will occur. If the dice is 10d1, that would imply that there will be one dice rolled, for 10 damage.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCba = "\n\nRumors: These are gained while talking to an NPC either through donations to a church, or drinking from an inn; which allude to areas that quests may potentially start.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCbb = "\n\nResistances: Physical(Slashing, Piercing, Crushing, and Missile), Fire, Cold, Electricity, Poison, Acid, Magic, and Magic Damage. These can be gained through abilities or items. Magic resistance will outright ignore the spell if the roll is successful, whereas Magic Damage will reduce the total damage received only.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCbc = "\n\nReaction: This is the time that your character will take to respond to commands given, whether it be movement or telling them to attack an enemy. Only luck can increase this stat.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCbd = "\n\nLore: Each character has a lore rating. Every item has a lore value. If a character's lore rating is equivalent or higher than an item's lore value, then that character may identify that item. As characters gain levels, their lore increases based on their class bonus. A character receives bonuses (and penalties) to their lore rating based on their Intelligence and Wisdom. The modifier is not cumulative with each level, but each ability bonus is applied separately. It is a 'one-time' bonus. Lore above 100 is rarely if not ever needed.",~
+APPEND ~L_EN_US.LUA~ ~	MISCHELP_DESCbe = "\n\nBackstab: When a thief is either stealthed or invisibile and they are behind their target, then their first attack will receive a backstab multiplier as long as the enemy is not immune.",~
+
+APPEND ~L_EN_US.LUA~ ~	STRPR_DESC = "The price to raise ones reputation has it's costs...\n\n",~
+APPEND ~L_EN_US.LUA~ ~	PREGEN_LABEL = "Pregenerate",~
+APPEND ~L_EN_US.LUA~ ~	MAP_RETURN = "Escape: Return to Game",~
+APPEND ~L_EN_US.LUA~ ~	MAP_SWAPL = "Space: Local Map",~
+APPEND ~L_EN_US.LUA~ ~	MAP_SWAPw = "Space: World Map",~
+APPEND ~L_EN_US.LUA~ ~	MAP_NOTES = "N: Toggle Notes\n(Right-Clicking on Map adds Notes",~
+APPEND ~L_EN_US.LUA~ ~	MAP_BACKGROUND = "B: Toggle Background",~
+APPEND ~L_EN_US.LUA~ ~	LANG_DESC = "Baldur's Gate is being translated to other languages by dozens of hardworking volunteers. Additional languages will be provided as free updates when they become available. To see what languages are currently being worked on, please visit translate.baldursgate.com",~
+APPEND ~L_EN_US.LUA~ ~	LANG_PROMPT = "REQUIRES GAME RESTART TO TAKE EFFECT",~
+APPEND ~L_EN_US.LUA~ ~	HELP_REVEAL = "Reveal Details",~
+ACTION_IF !(MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~506~ AND MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~507~) THEN BEGIN
+	APPEND ~L_EN_US.LUA~ ~	DIFF_DESC_LOB = "All of the following effects are gained by non-joinable party members:\n\nBase health increased by *3+80, +5 thac0 and saving throws, -11 AC, +1 APR, and +12 levels. The levels gained only increase stat gain, such as hit-die and thac0. Additional spells are not memorized or gained by casters.\n\nDamage received is increased by 100% and party members can permanently die.\n\nStronger enemy types will appear.",~
+END ELSE BEGIN
+	APPEND ~L_EN_US.LUA~ ~	DIFF_DESC_LOB = "All of the following effects are gained by non-joinable party members:\n\nBase health increased by *3+80, +5 thac0 and saving throws, -3 through -11 bonus AC which is determined by the creature level, +1 APR, and +12 levels. The levels gained only increase stat gain, such as hit-die and thac0. Additional spells are not memorized or gained by casters.\n\nDamage received is increased by 100% and party members can permanently die.\n\nStronger enemy types will appear.",~
+END
+
+APPEND ~L_EN_US.LUA~ ~}~
+
+//table additions
+//COPY ~%MOD_FOLDER%/tables/strmod.2da~ ~override~
+//PRETTY_PRINT_2DA
+//COPY ~%MOD_FOLDER%/tables/strmodex.2da~ ~override~
+//PRETTY_PRINT_2DA
+//COPY ~%MOD_FOLDER%/tables/thac0.2da~ ~override~
+//PRETTY_PRINT_2DA
+
+
+//sneak attack additions
+
+  ACTION_IF (NOT FILE_EXISTS_IN_GAME ~sneakatt.2da~) BEGIN
+    COPY ~%MOD_FOLDER%/tables/sneakatt.2da~ ~override~
+  END
+  ACTION_IF (NOT FILE_EXISTS_IN_GAME ~crippstr.2da~) BEGIN
+    COPY ~%MOD_FOLDER%/tables/crippstr.2da~ ~override~
+  END
+  ACTION_IF (NOT FILE_EXISTS_IN_GAME ~backstab.spl~) BEGIN
+    COPY ~%MOD_FOLDER%/spells/backstab.spl~ ~override~
+  END
+  
+//sneak attack strings
+
+COPY_EXISTING ~enginest.2da~ ~override~
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_STRENGTH[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~STRENGTH: Strength measures a character's muscle, endurance and stamina. It is the prime requisite of Fighters.
+
+Note: Increases in strength will only affect melee weapons in regards to thac0/damage, with exceptions being slings and returnable thrown daggers.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_DEXTERITY[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~DEXTERITY: The character's hand-eye coordination, agility, reflexes, and balance. It is the prime requisite of the Thief.
+
+Note: Increases in dexterity will only affect ranged weapons in regards to thac0, dexterity also allots more starting thievery points for thiefs.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_CONSTITUTION[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~CONSTITUTION: The character's fitness, health, and phyiscal resistance. This ability is important to the Ranger.
+
+Regeneration is stackable with other forms. Gaining additional points of constitition will retroactively increase HP gains.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_INTELLIGENCE[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~INTELLIGENCE: The character's memory, reasoning, and learning ability. It is the prime requisite of the Mage.
+
+Note: A character with an Intelligence score of 8 or less is illiterate and cannot use scrolls or most wands regardless of his class.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_WISDOM[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~WISDOM: Wisdom measures a character's enlightenment, judgment, and common sense. It is the prime requisite of priests.
+
+Note: Spell gain is in relation to clerics/druids spellslots. Lore is the ability to identify items; WIS and INT lore stack.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_CHARISMA[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~CHARISMA: The character's persuasiveness, personal magnetism, and ability to lead. This ability is important to the Druid, Bard, and Paladain.
+
+Dialogue options will vary depending on a character's other stats,(some additional dialogue options appear) with charisma being the most influencing.
+
+Minimum: <MINIMUM>
+Maximum: <MAXIMUM>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_SAVEVSBREATH[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Reflex~
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_SAVEVSDEATH[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Death~
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_SAVEVSPOLY[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Polymorph~
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_SAVEVSWANDS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Wand~
+
+REPLACE_TEXTUALLY ~\(STRREF_FEEDBACK_SNEAK_ATTACK[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Sneak Attack~
+
+REPLACE_TEXTUALLY ~\(STRREF_FEEDBACK_SNEAK_AVOIDED[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Sneak Attack ineffective~
+
+REPLACE_TEXTUALLY ~\(STRREF_FEEDBACK_CRIPPLING_STRIKE[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Crippling Strike~
+
+REPLACE_TEXTUALLY ~\(STRREF_FEEDBACK_SNEAK_UNUSABLE_WEAPON[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Weapon is unsuitable for sneak attack~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_3E_SNEAK_ATTACK[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Sneak Attack Damage~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_CRIPPLING_STRIKE[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Crippling Strike~
+
+//profiencies strings
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_PICK_POCKETS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~PICK POCKETS: The rogue uses this ability when filching small items from other people's pockets, sleeves, girdles, packs, and so on. With greater skill, a talented rogue can even snatch larger items, including weapons and certain articles of clothing.
+
+Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_OPEN_LOCKS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~OPEN LOCKS: A Thief uses this ability to pick padlocks, door locks, and combination locks.
+
+Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_DETECT_TRAPS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~FIND TRAPS: A character uses this ability to find small traps, pit traps, and alarms. It does not find large mechanical traps. Thieves may also use this ability to disarm any traps they find, exceeding past 100 is not needed.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_MOVE_SILENTLY[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~STEALTH: When a character uses this ability, <PRO_HESHE> is able to move without making sound.
+
+Only usable when not visible by enemies, unless classed as a Shadowdancer. Attempting to hide in daylight imposes a -100 penalty, hiding in shadows increases the likelihood. No more than 200 is needed.
+
+This ability takes the combined average of 'Move Silently and Hide in Shadows' and combines them into one, as they are both the same.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_MOVE_SILENTLY[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Stealth~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_HIDE_IN_SHADOWS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~HIDE IN SHADOWS: Using this ability, a character can disappear into shadows or any other type of concealment—bushes, curtains, crannies, etc.
+
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_SET_TRAPS[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SET TRAPS: Allows the thief to create snares of <PRO_HISHER> own if they have the ability. Percentage based skill, no more than 100 is needed.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_DETECT_ILLUSION[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~DETECT ILLUSION: While an adventurer searches for traps, <PRO_HISHER> well-trained eyes also allow <PRO_HIMHER> to detect the minor inconsistencies caused by illusion spells.\n\nThis skill is the percentage chance per round of dispelling a enemy illusion spells within 30 ft, no more than 100 is needed.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_PROFICIENCIES[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Each proficiency class has bonus cumulative effects, the next pip(*) will add to the prior. Only Fighters are able to gain APR(attacks per round) through proficiency classes up to +1 APR. Wielding a weapon with no pips will incur a -5 penalty to thac0. Weapon Styles are additional separate bonuses to wielded weapons.
+
+<DOTS1>
+
+<DOTS2>
+
+<DOTS3>
+
+<DOTS4>
+
+<DOTS5>~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_DOTS1[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Proficient(*): Weapon usable with no penalties.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_DOTS2[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Specialized(**): +1 thac0, +2 damage and (for warriors only) +.5 APR.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_DOTS3[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Master(***): +2 thac0, +1 damage.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_DOTS4[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~High Master(****): +1 damage and -1 Speed Factor.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_MIXED_DOTS5[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Grandmaster(*****): +1 damage, -2 Speed Factor and (for warriors only) +.5 APR.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_THIEF[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~THIEF: To accomplish <PRO_HISHER> goals, for good or ill, the Thief is a skilled pilferer. Cunning, nimbleness, and stealth are <PRO_HISHER> hallmarks. Whether <PRO_HESHE> turns <PRO_HISHER> talent against innocent passersby and wealthy merchants or oppressors and monsters is a choice for the Thief to make.
+
+CLASS FEATURES:
+
+– May not wear armor heavier than studded leather.
+– May not equip shields larger than bucklers.
+– May only use the following weapons: long sword, short sword, katana, scimitar, dagger, club, quarterstaff, crossbow, shortbow, dart, sling.
+– May only become Proficient (one slot) in any weapon class.
+– May only become Proficient (one slot) in any fighting style.
+– May distribute 25 points per level (40 at level 1) in thieving abilities: Open Locks, Pick Pockets, Find Traps, Move Silently, Hide In Shadows, Detect Illusion, Set Traps.
+– Starts with base scores of 10% in Open Locks, 5% in Find Traps, 15% in Pick Pockets, 10% in Move Silently, and 5% in Hide in Shadows.
+– May backstab for increased damage:
+  Level 1-4: x2
+  Level 5-8: x3
+  Level 9-12: x4
+  Level 13+: x5
+– May use the Set Snare ability once per day. Gains one use at level 1 and an additional use every 5 levels thereafter.
+
+SET SNARE: Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the Thief's level and can only be triggered by enemies.
+  1st level: Deals 2d8+5 missile damage.
+  11th level: Deals 2d8+5 missile damage and additionally deals 2d6 poison damage per round for the next 3 rounds.
+  16th level: Deals 3d8+5 missile damage and 4d8+2 fire damage.
+  21st level: Deals 3d8+5 missile damage and 20 poison damage with no save; slays target if a Save vs. Death with a +4 bonus is failed.
+
+– Alignment restricted to any except lawful good.
+– Hit Die: d6
+
+Prime Requisites For Dual-Classing: Dexterity
+
+THIEVING ABILITES:
+
+Open Locks: Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.
+Pick Pockets: Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.
+Find Traps: Ability to both find and disarm traps, exceeding past 100 is not needed.
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.
+Detect Illusion: This ability uses a percentage based chance to detect any illusion based spells, exceeding past 100 is not needed.
+Set Traps: This ability is based off percentage, exceeding past 100 is not needed.~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_DRUID[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~DRUID: The Druid serves the cause of nature and neutrality; the wilderness is <PRO_HISHER> community, and <PRO_HESHE> uses <PRO_HISHER> special powers to protect it and to preserve balance in the world.
+
+CLASS FEATURES:
+
+– May only wear non-metallic armor.
+– May only equip bucklers and non-metallic shields.
+– May only use the following weapons: scimitar, dagger, club, spear, quarterstaff, dart, sling.
+– May only become Proficient (one slot) in any weapon class.
+– May only become Proficient (one slot) in any fighting style.
+– May cast druidic spells.
+– 7th level: May Shapeshift into a wolf, black bear, or brown bear once per day.
+– 15th level: Becomes immune to poison.
+– 18th level: Gains 10% resistance to cold, fire, electricity, and acid; gains a further 10% resistance at levels 21 and 24.
+– Alignment restricted to true neutral.
+– Hit Die: d8
+
+Druid Forms:
+
+– BLACK BEAR
+Attributes: STR 18/00, DEX 12, AC: 7
+Damage: 1d4(Piercing)
+Enchantment: 1
+APR: 3
+Special: -15% movement.
+
+– BROWN BEAR
+Attributes: STR 18/00, DEX 12, AC: 6
+Damage: 1d6+2(Slashing)
+Enchantment: 1
+APR: 3
+Special: -15% movement.
+
+– WOLF
+Attributes: STR 18, DEX 17, AC: 6
+Damage: 1d8(Piercing)
+Enchantment: 1
+APR: 2
+Special: +25% movement, 100% cold resistance, 50% electricity resistance.
+
+Prime Requisites For Dual-Classing: Wisdom, Charisma~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_MAGE[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~MAGE: The wizard strives to be a master of magical energies, shaping them and casting them as spells. To do so, <PRO_HESHE> studies strange tongues and obscure facts and devotes much of <PRO_HISHER> time to magical research. A wizard must rely on knowledge and wit to survive. Wizards are rarely seen adventuring without a retinue of fighters and men-at-arms. Because there are different types (or schools) of magic, there are different types of wizards. The Mage studies all types of magic and learns a wide variety of spells; <PRO_HISHER> broad range makes <PRO_HIMHER> well suited to the demands of adventuring. The mage is able to to provide utility in the sense of their magic use as they are able to scribe arcane spell scrolls into their spellbook.
+
+CLASS FEATURES:
+
+– May not wear any armor.
+– May only use the following weapons: dagger, quarterstaff, dart, sling.
+– May only become Proficient (one slot) in any weapon class.
+– May not place any slots in any fighting style.
+– May cast arcane spells.
+– May use arcane scrolls.
+– May scribe arcane spell scrolls into their spellbook. Which allows the mage to memorize the spell to be able to be cast. Each memorized spell will allow one cast of that spell.
+– The amount of spells able to scribed into the spellbook is dependent on the mages intelligence, whereas more allows more scribes.
+– Hit Die: d4
+
+Prime Requisites For Dual-Classing: Intelligence~
+
+REPLACE_TEXTUALLY ~\(STRREF_GUI_HELP_SORCERER[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SORCERER: Sorcerers are practitioners of magic who were born with the innate ability to cast spells. It is thought that the blood of some powerful creature flows through their veins; perhaps they are the spawn of the gods themselves, or even dragons walking in humanoid form. Regardless, the Sorcerer's magic is intuitive rather than logical. They know fewer spells than Mages, and acquire spells more slowly, but they can cast spells more often and have no need to select and prepare spells ahead of time. Sorcerers cannot specialize in magic the way Mages do.
+
+CLASS FEATURES:
+
+– May not wear any armor.
+– May only use the following weapons: dagger, quarterstaff, dart, sling.
+– May only become Proficient (one slot) in any weapon class.
+– May not place any slots in any fighting style.
+– May cast arcane spells.
+– May use arcane scrolls.
+– May not scribe spells into their spellbooks as Mages do. Instead, Sorcerers learn a small number of spells at each level, which they can cast daily without memorization.
+– Hit Die: d4~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_HELP_PROFICIENCIES[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "profdesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_HELP_THIEF[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "thiefdesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_HELP_DRUID[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "druiddesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_HELP_MAGE[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "magedesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_HELP_SORCERER[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "sorcdesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_LOWER_KIT_WILDMAGE[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "wilddesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+REPLACE_EVALUATE  ~\(STRREF_GUI_TOOLTIP_HELP[ %TAB%]+\)\([-0-9]+\)~
+BEGIN SET "helpdesc" = MATCH2 END ~%MATCH1%%MATCH2%~
+
+PRETTY_PRINT_2DA
+BUT_ONLY
+
+COPY_EXISTING ~clastext.2da~ ~override~
+REPLACE_TEXTUALLY ~\(THIEF[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%thiefdesc%~
+
+REPLACE_TEXTUALLY ~\(DRUID[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%druiddesc%~
+
+REPLACE_TEXTUALLY ~\(MAGE[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%magedesc%~
+
+REPLACE_TEXTUALLY ~\(SORCERER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%sorcdesc%~
+
+
+COPY_EXISTING ~weapprof.2da~ ~override~
+
+REPLACE_TEXTUALLY ~\(BASTARDSWORD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~BASTARD SWORD: The bastard sword is a double-edged sword and can be wielded with one hand. It does more damage than a long sword but less than a two-handed sword.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 2d4
+Damage Type - Slashing
+APR - 1
+Speed Factor - 8
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(LONGSWORD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~LONG SWORD: The long sword is perhaps one of the most common weapons in Faerûn. Skill with the long sword will allow your character to have access to a widely available and cheap weapon.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d8
+Damage Type - Slashing
+APR - 1
+Speed Factor - 5
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(SHORTSWORD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SHORT SWORD: The preferred weapon of many a Thief and halfling, the short sword is a light but useful weapon.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d6
+Damage Type - Slashing
+APR - 1
+Speed Factor - 3
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(AXE[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~AXE: There are two varieties of axes: battle axes and throwing axes.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d8 / 1d6
+Damage Type - Slashing / Missile
+APR - 1
+Speed Factor - 7 / 4
+Damage Bonus - Strength / Strength & Dexterity~
+
+REPLACE_TEXTUALLY ~\(TWOHANDEDSWORD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~TWO-HANDED SWORD: The hallmark of the traditional musclebound warrior is the two-handed sword. This proficiency class allows your character to use these heavy swords to mangle your opponents.
+
+Base Weapon Statistics:
+Range - 2
+Damage - 1d10
+Damage Type - Slashing
+APR - 1
+Speed Factor - 10
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(KATANA[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~KATANA: The katana is the finest example of the swordsmith's craft, and requires great care to use. As skill develops, the wielder and blade become a single being, dedicated completely to the art of warfare. These weapons are hard to find outside of Kara-Tur, so care must be taken when considering this proficiency. After all, skill with the katana is only helpful if you can find one.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d10
+Damage Type - Slashing
+APR - 1
+Speed Factor - 4
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(SCIMITARWAKISASHININJATO[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SCIMITAR/WAKIZASHI/NINJATŌ: This weapon class allows the character to use various oriental swords.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d8
+Damage Type - Slashing / Piercing / Slashing
+APR - 1
+Speed Factor - 5 / 3 / 4
+Damage Bonus - Strength~
+
+PATCH_IF (MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~500~) BEGIN
+	REPLACE_TEXTUALLY ~\(DAGGER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+	REPLACE 999999 ~DAGGER: The dagger is generally used by Mages and Thieves. This proficiency covers both daggers and throwing daggers.
+	
+	Base Weapon Statistics:
+	Range - 1 / 30
+	Damage - 1d4
+	Damage Type - Piercing / Missile
+	APR - 1 / 2
+	Speed Factor - 2
+	Damage Bonus - Strength / Strength & Dexterity~
+END ELSE BEGIN
+	REPLACE_TEXTUALLY ~\(DAGGER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+	REPLACE 999999 ~DAGGER: The dagger is generally used by Mages and Thieves. This proficiency covers both daggers and throwing daggers.
+	
+	Base Weapon Statistics:
+	Range - 0 / 30
+	Damage - 1d4
+	Damage Type - Piercing / Missile
+	APR - 1 / 2
+	Speed Factor - 2
+	Damage Bonus - Strength / Strength & Dexterity~
+END
+
+REPLACE_TEXTUALLY ~\(WARHAMMER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~WAR HAMMER: This proficiency class allows the character to use war hammers and throwing hammers. Both of these weapons are often associated with dwarven warriors, and it is the dwarven people who make the finest quality hammers.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d4 / 1d4
+Damage Type - Crushing / Missile
+APR - 1
+Speed Factor - 4
+Damage Bonus - Strength / Strength & Dexterity~
+
+REPLACE_TEXTUALLY ~\(CLUB[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~CLUB: This proficiency class allows the character to use clubs.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d6
+Damage Type - Crushing
+APR - 1
+Speed Factor - 4
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(SPEAR[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SPEAR: The spear is a useful weapon, giving the attacker the "reach" against most opponents.
+
+Base Weapon Statistics:
+Range - 2
+Damage - 1d6 / 1d6
+Damage Type - Piercing / Missile
+APR - 1
+Speed Factor - 6
+Damage Bonus - Strength / Strength & Dexterity~
+
+REPLACE_TEXTUALLY ~\(HALBERD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~HALBERD: These long weapons are often carried by Fighters working as guards. The reach of the weapon allows crowds to be pushed back without much danger to the guard.
+
+Base Weapon Statistics:
+Range - 2
+Damage - 1d10
+Damage Type - Slashing/Piercing
+APR - 1
+Speed Factor - 9
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(FLAILMORNINGSTAR[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~FLAIL/MORNING STAR: The flail and morning star are blunt weapons used to knock your enemies senseless. They are difficult to use but with skill and practice these weapons are very useful.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d6
+Damage Type - Crushing
+APR - 1
+Speed Factor - 7
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(MACE[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~MACE: The mace is most often associated with Clerics. It is a powerful blunt weapon, similar to the club but designed to do more damage.
+
+Base Weapon Statistics:
+Range - 1
+Damage - 1d6
+Damage Type - Crushing
+APR - 1
+Speed Factor - 7
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(QUARTERSTAFF[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~QUARTERSTAFF: A simple weapon, but in the hands of a skilled warrior, whether Mage or Paladin, the quarterstaff can lay flat any foe.
+
+Base Weapon Statistics:
+Range - 2
+Damage - 1d8
+Damage Type - Crushing
+APR - 1
+Speed Factor - 4
+Damage Bonus - Strength~
+
+REPLACE_TEXTUALLY ~\(CROSSBOW[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~CROSSBOW: The light and heavy crossbow, although smaller and easier to use than the longbow, is just as deadly in the hands of a skilled shot.
+
+Base Weapon Statistics:
+Range - 100 / 100
+Damage - 1d8 / 3d10
+Damage Type - Missile
+APR - 1
+Speed Factor - 7 / 10
+Damage Bonus - Dexterity~
+
+REPLACE_TEXTUALLY ~\(LONGBOW[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~LONGBOW: This proficiency class allows the character to use longbows, both normal and composite.
+
+Base Weapon Statistics:
+Range - 100 / 100
+Damage - 1d7 / 1d8
+Damage Type - Missile
+APR - 2
+Speed Factor - 7 / 7
+Damage Bonus - Dexterity~
+
+REPLACE_TEXTUALLY ~\(SHORTBOW[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SHORTBOW: This bow is often used by those classes (such as Thieves) who cannot use the larger longbow. It is more easily concealed than a longbow and, in the hands of a skilled user, just as deadly.
+
+Base Weapon Statistics:
+Range - 75
+Damage - 1d6
+Damage Type - Missile
+APR - 2
+Speed Factor - 6
+Damage Bonus - Dexterity~
+
+REPLACE_TEXTUALLY ~\(DART[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~DART: Darts are small missile weapons, thrown from the hand. Mages often use darts, as they are one of the few missile weapons Mages can employ.
+
+Base Weapon Statistics:
+Range - 20
+Damage - 1d3
+Damage Type - Missile
+APR - 3
+Speed Factor - 2
+Damage Bonus - Dexterity~
+
+REPLACE_TEXTUALLY ~\(SLING[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SLING: Although the sling is commonly thought of as a toy weapon, its lethality should not be underestimated. A strong bullet thrown from a sling by an experienced user can tear a hole through a man's skull.
+
+Base Weapon Statistics:
+Range - 40
+Damage - 1d5
+Damage Type - Missile
+APR - 1
+Speed Factor - 6
+Damage Bonus - Strength & Dexterity~
+
+REPLACE_TEXTUALLY ~\(2HANDED[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Two-Handed~
+
+REPLACE_TEXTUALLY ~\(2HANDED[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~TWO-HANDED: This fighting style benefits two-handed melee weapons only.
+
+Proficient(*): +1 damage, -2 Speed Factor, and allows scoring critical hits on rolls of both 19 or 20.
+
+Specialized(**): The wielder gets a further -2 bonus to Speed Factor.~
+
+REPLACE_TEXTUALLY ~\(SWORDANDSHIELD[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Weapon and Shield~
+
+REPLACE_TEXTUALLY ~\(SWORDANDSHIELD[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~WEAPON AND SHIELD: Anyone can pick up a shield and get its basic protection bonuses, but by spending slots on this fighting style, an adventurer can maximize the benefits received.
+
+Proficient(*): The wielder gets a -2 bonus to AC against missile weapons.
+
+Specialized(**): The wielder gets a -4 bonus to AC against missile weapons.~
+
+REPLACE_TEXTUALLY ~\(SINGLEWEAPON[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~One-Handed~
+
+REPLACE_TEXTUALLY ~\(SINGLEWEAPON[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SINGLE-WEAPON: This will only benefit the character when wielding a single weapon, without a shield.
+
+Proficient(*): The wielder gets a -1 bonus to AC and inflicts critical damage on an attack roll of 19 or 20.
+
+Specialized(**): Armor Class bonus increased to -2.~
+
+REPLACE_TEXTUALLY ~\(2WEAPON[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~Dual Wield~
+
+REPLACE_TEXTUALLY ~\(2WEAPON[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~DUAL WIELD: This fighting style allows the character to use two melee weapons at the same time with fewer penalties. A character wielding two weapons without a pip in this proficiency would incur a -4 thac0 penalty to the main weapon and a -8 to the off-hand. 
+
+Proficient(*): Wielding penalties of -2 with main weapon and -6 with off-hand.
+
+Specialized(**): Wielding penalties of 0 with main weapon and -4 with off-hand.
+
+Master(***): Wielding penalties of 0 with main weapon and -2 with off-hand.~
+
+PRETTY_PRINT_2DA
+
+BUT_ONLY
+
+
+//class desc upgrades
+
+ACTION_IF GAME_IS ~eet~ BEGIN
+
+COPY_EXISTING ~campaign.2da~ ~override~
+REPLACE_TEXTUALLY ~\(SOA[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+\)[-0-9a-zA-Z\_\*]+~ ~\1CLASTEXT~
+
+REPLACE_TEXTUALLY ~\(TOB[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+\)[-0-9a-zA-Z\_\*]+~ ~\1CLASTEXT~
+
+REPLACE_TEXTUALLY ~\(BG1[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+\)[-0-9a-zA-Z\_\*]+~ ~\1CLASTEXT~
+
+REPLACE_TEXTUALLY ~\(SOD[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+[ %TAB%]+[-0-9a-zA-Z\_\*]+[ %TAB%]+\)[-0-9a-zA-Z\_\*]+~ ~\1CLASTEXT~
+
+PRETTY_PRINT_2DA
+
+BUT_ONLY
+END
+
+
+ACTION_IF (MOD_IS_INSTALLED ~misc_ex/misc_ex.tp2~ ~500~) THEN BEGIN
+
+COPY_EXISTING ~kitlist.2da~ ~override~
+
+REPLACE_TEXTUALLY ~\(ARCHER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~ARCHER: The Archer is the epitome of skill with the bow—the ultimate marks<PRO_MANWOMAN>, able to make almost any shot, no matter how difficult. To become so skilled with the bow, the Archer has had to sacrifice some of <PRO_HISHER> proficiency with melee weapons and armor.
+
+Advantages:
+– +1 to hit and damage rolls with any missile weapon every 3 levels.
+– May achieve Grand Mastery (5 slots) in longbows, shortbows, and crossbows.
+– May use the Called Shot ability once per day. Gains one use at level 4 and an additional use every 4 levels thereafter.
+
+CALLED SHOT: All successful ranged attacks within the next 10 seconds have the following cumulative effects besides normal damage, according to the level of the Archer:
+ 4th level: -1 penalty to target's THAC0.
+ 8th level: -1 penalty to target's Saving Throws vs. Breath.
+ 12th level: 30% speed reduction for 10 seconds(non stacking).
+ 16th level: +2 bonus to damage roll.
+
+Disadvantages:
+– May only wear leather, studded leather, and hide armor.
+– May only become Proficient (one slot) with melee weapons.
+– May not use the Charm Animal ability.~
+
+END
+
+COPY_EXISTING ~kitlist.2da~ ~override~
+REPLACE_TEXTUALLY ~\(WIZARD_SLAYER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~WIZARD SLAYER: This warrior has been specially trained by <PRO_HISHER> sect to excel in hunting and combating spellcasters of all kinds.
+
+Advantages:
+– Each successful melee hit bestows a 25% cumulative chance of spell failure on the target.
+– +1% Magic Resistance per level through level 19.
+– Alternating +5% and +1% Magic Resistance from level 20 onwards.
+
+Disadvantages:
+– May not use any magic items apart from weapons and armor.~
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+REPLACE_TEXTUALLY ~\(SHAPESHIFTER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SHAPESHIFTER: This Druid is not called Shapeshifter because <PRO_HESHE> has access to a great variety of forms, but rather because of <PRO_HISHER> complete dedication to a single alternate form. This Druid has willingly allowed <PRO_HIMHER>self to become infected with lycanthropy, but due to intense study and training <PRO_HESHE> has the ability to control <PRO_HISHER> affliction. The creature <PRO_HESHE> becomes is that of the werewolf, the most famous of the lycanthrope shape changers.
+
+Advantages:
+– May shapeshift into the form of a werewolf once per day. Gains one use at level 1 and an additional use every 2 levels thereafter.
+
+– WEREWOLF
+Attributes: STR 19, DEX 16, AC: -1
+Damage: 1d6+2(Slashing)
+Enchantment: 2
+APR: 2
+Special: +50% movement speed, 20% magic resistance.
+
+– 13th level: May shapeshift into a greater werewolf once per day.
+
+– GREATER WEREWOLF
+Attributes: STR 21, DEX 20, AC: -10
+Damage: 1d8+2(Slashing)
+Enchantment: 2
+APR: 3
+Special: +50% movement speed, 40% magic resistance, 50% fire/cold/acid/electricity resistance.
+
+Disadvantages:
+– May not wear any armor.
+– No other shapeshifting abilities due to the effort required in maintaining balance in <PRO_HISHER> primary forms.~
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REPLACE_TEXTUALLY ~\(BEAST_FRIEND[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~AVENGER: A member of a special sect within the druidic order, a Druid of this type is dedicated to fighting those who would defile nature. Avengers have powers the average Druid does not—additional abilities that have been earned through extensive rituals, a process that is very physically draining.
+
+Advantages:
+– 7th level: May Shapeshift into the form of a sword spider, baby wyvern, and fire salamander in addition to the normal shapeshifting abilities.
+– 19th level: Gains an additional use of Shapeshift.
+– Six arcane spells are added to <PRO_HISHER> repertoire, all the way up to the 6th level. These are listed below:
+  1st level: Chromatic Orb.
+  2nd level: Web.
+  3rd level: Lightning Bolt.
+  4th level: Improved Invisibility.
+  5th level: Chaos.
+  6th level: Chain Lightning.
+
+Druid Forms:
+
+– BLACK BEAR
+Attributes: STR 18/00, DEX 12, AC: 7
+Damage: 1d4(Piercing)
+Enchantment: 1
+APR: 3
+Special: -15% movement.
+
+– BROWN BEAR
+Attributes: STR 18/00, DEX 12, AC: 6
+Damage: 1d6+2(Slashing)
+Enchantment: 1
+APR: 3
+Special: -15% movement.
+
+– WOLF
+Attributes: STR 18, DEX 17, AC: 6
+Damage: 1d8(Piercing)
+Enchantment: 1
+APR: 2
+Special: +25% movement, 100% cold resistance, 50% electricity resistance.
+  
+Avenger Forms:
+
+– SWORD SPIDER
+Attributes: STR 16, DEX 16, AC: 3
+Damage: 2d6(Piercing)
+Enchantment: 0
+APR: 4
+Special: Permanent Haste, Immunity to Web, -4 AC bonus vs. missiles.
+
+– BABY WYVERN
+Attributes: STR 16, DEX 17, AC: 3
+Damage: 1d6+2
+Enchantment: 2
+APR: 2
+Special: On hit poison (5d1 poison damage per sec for 20sec, vs. death -4 negates), Immunity to Hold, Paralyze, Slow, Level Drain, Web, Entangle, and Grease, -2 bonus vs. missiles. 
+
+– FIRE SALAMANDER
+Attributes: STR 18/75, DEX 19, AC: 2
+Damage: 1d8+3 (Two-Handed Weapon Style applies)
+Enchantment: 3
+APR: 1
+Special: -1 thac0, 50% fire resistance, gains Breathe Fireball (2d6 fire damage, 15ft range, no save)
+
+Disadvantages:
+– May not wear heavier armor than leather.
+– Incurs a -2 penalty to Strength and Constitution.~
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REPLACE_TEXTUALLY ~\(ASSASIN[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~ASSASSIN: This is a killer trained in discreet and efficient murder, relying on anonymity and surprise to perform <PRO_HISHER> task.
+
+Advantages:
+– +1 bonus to hit and damage rolls.
+– Backstab ability reaches x7 multiplier instead of capping at x5.
+  Level 17-20: x6
+  Level 21-40: x7
+– May use the Poison Weapon ability. Gains one use at level 1 and an additional use every 4 levels thereafter.
+
+Poison Weapon
+Each successful hit within the next 5 rounds will inject poison into the target. Each target can only be affected once per round. The amount of poison damage depends on the character's level:
+
+1st - Target suffers 1 poison damage per second for 6 seconds (Save vs. Death at +1 negates)
+5th - Target suffers 1 poison damage per second for 12 seconds (Save vs. Death negates), and also immediately suffers 2 poison damage (no save)
+9th - Target suffers 1 poison damage per second for 18 seconds (Save vs. Death at -1 negates), and also immediately suffers 4 poison damage (no save)
+13th - Target suffers 1 poison damage per second for 24 seconds (Save vs. Death at -2 negates), and also immediately suffers 6 poison damage (no save)
+
+Disadvantages:
+– May only distribute 15 skill points per level among thieving skills.
+
+THIEVING ABILITES:
+
+Open Locks: Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.
+Pick Pockets: Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.
+Find Traps: Ability to both find and disarm traps, exceeding past 100 is not needed.
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.
+Detect Illusion: This ability uses a percentage based chance to detect any illusion based spells, exceeding past 100 is not needed.
+Set Traps: This ability is based off percentage, exceeding past 100 is not needed.~
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REPLACE_TEXTUALLY ~\(BOUNTY_HUNTER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~BOUNTY HUNTER: This is a hunter of men, skilled in tracking quarry and bringing them back alive—whether for lawful authorities or underworld masters. Bounty Hunters are specially trained at their task and make fearsome opponents. They have honed their trap-making abilities well beyond that of the average Thief.
+
+Advantages:
+– +15 bonus to Set Traps.
+– May use the Set Special Snare ability once per day in addition to the normal Thief's Set Snare. Gains one use at level 1 and an additional use every 5 levels thereafter.
+
+SET SPECIAL SNARE: Set a trap in the chosen location when no hostile creatures are in sight. Traps grow more powerful with the Bounty Hunter's level and can only be triggered by enemies.
+  1st level: Deals 3d8+5 missile damage and slows target for 5 rounds if a Save vs. Spell with a -4 penalty is failed.
+  11th level: Deals 4d8+5 missile damage and holds target for 5 rounds if a Save vs. Spell with a -1 penalty is failed.
+  16th level: Erects an Otiluke's Resilient Sphere around the target for 7 rounds if a Save vs. Spell is failed.
+  21st level: Mazes the target.
+
+Disadvantages:
+– May only distribute 20 skill points per level among thieving skills.
+
+THIEVING ABILITES:
+
+Open Locks: Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.
+Pick Pockets: Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.
+Find Traps: Ability to both find and disarm traps, exceeding past 100 is not needed.
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.
+Detect Illusion: This ability uses a percentage based chance to detect any illusion based spells, exceeding past 100 is not needed.
+Set Traps: This ability is based off percentage, exceeding past 100 is not needed.~
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REPLACE_TEXTUALLY ~\(SWASHBUCKLER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SWASHBUCKLER: This rogue is part acrobat, part swords<PRO_MANWOMAN>, and part wit: the epitome of charm and grace.
+
+Advantages:
+– +1 bonus to Armor Class at 1st level, plus an additional +1 bonus every 5 levels.
+– +1 bonus to hit and damage rolls every 5 levels.
+– May Specialize (two slots) in any melee weapon available to Thieves.
+– May place 3 slots into Two-Weapon Style.
+
+Disadvantages:
+– May not use Backstab ability.
+
+THIEVING ABILITES:
+
+Open Locks: Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.
+Pick Pockets: Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.
+Find Traps: Ability to both find and disarm traps, exceeding past 100 is not needed.
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.
+Detect Illusion: This ability uses a percentage based chance to detect any illusion based spells, exceeding past 100 is not needed.
+Set Traps: This ability is based off percentage, exceeding past 100 is not needed.~
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REPLACE_TEXTUALLY ~\(SHADOWDANCER[ %TAB%]+[-0-9]+[ %TAB%]+[-0-9]+[ %TAB%]+\)[-0-9]+~ ~\1%text%~
+REPLACE 999999 ~SHADOWDANCER: Shadowdancers can harness the power of magic to increase their stealth abilities. Enigmatic and dangerous, these uniquely skilled Thieves are able to blend seamlessly into the shadows in ways that a normal Thief cannot, striking without warning—sometimes with supernatural speed.
+
+Advantages:
+– +10 bonus to Hide In Shadows and Move Silently.
+– Hide In Plain Sight: A Shadowdancer may hide in shadows even while being observed.
+– May cast Shadowstep once per day. Gains one use at level 5 and an additional use every 5 levels thereafter.
+
+SHADOWSTEP: Step into the Shadow Plane and move for 7 seconds while others are frozen in time. The Shadowdancer cannot attack or cast spells while in the Shadow Plane.
+
+– Slippery Mind: +1 bonus to Saving Throws.
+
+Disadvantages:
+– Alignment restricted to any non-lawful.
+– -1 to backstab multiplier compared to an unkitted Thief:
+  Level 1-4: x1 (no multiplier)
+  Level 5-8: x2
+  Level 9-12: x3
+  Level 13+: x4
+– May only distribute 20 skill points per level (30 at level 1) among thieving skills.
+– May not use the Set Snare ability.
+
+Prime Requisites For Dual-Classing: Strength, Dexterity, Charisma
+
+THIEVING ABILITES:
+
+Open Locks: Difficulty threshold has a +/- 5. Very few locks exceed 100 difficulty.
+Pick Pockets: Each item has different difficulty threshold. If stealing from a thief, their pickpocket skill is subtracted from the characters. Exceeding 200 pickpockets is not needed.
+Find Traps: Ability to both find and disarm traps, exceeding past 100 is not needed.
+Stealth: There is no difference between Move Silently and Hide in Shadows. The sum of the two skills are taken when determing stealth checks. Hiding while in shadows has higher success versus more lit areas. 200 total skill points are needed to hide wherever.
+Detect Illusion: This ability uses a percentage based chance to detect any illusion based spells, exceeding past 100 is not needed.
+Set Traps: This ability is based off percentage, exceeding past 100 is not needed.~
+
+PRETTY_PRINT_2DA
+/////////////////////////////////////////
+///////////////////////////////BEGIN STRING UPDATES, BEGIN STRING REPLACEMENTS
+/////////////////////////////////////////
+
+COPY_EXISTING ~ui.menu~ ~override~
+REPLACE_TEXTUALLY ~--PROFREP~ ~%profdesc%~
+REPLACE_TEXTUALLY ~--WILDREP~ ~%wilddesc%~
+REPLACE_TEXTUALLY ~--HELPREP~ ~%helpdesc%~
+
+/////////////////////////////////////////
+///////////////////////////////BEGIN ITEMS
+/////////////////////////////////////////
+
+ACTION_IF GAME_INCLUDES ~bg2~ THEN BEGIN // changes robe of vecna to archmage robe
+
+COPY_EXISTING ~wa2robe.itm~ ~override~ 
+	WRITE_ASCII 0x22 ~4W~ #2 
+	
+BUT_ONLY IF_EXISTS
+END
+
+COPY ~ui_ex/items~ ~override~
+
+/////////////////////////////////////////
+///////////////////////////////BEGIN PARTY AI
+/////////////////////////////////////////
+
+ACTION_IF (!MOD_IS_INSTALLED ~cdtweaks/setup-cdtweaks.tp2~ 4140) THEN BEGIN
+
+COPY_EXISTING ~baldur.gam~ ~override~ // starts new games with the party ai turned off
+	WRITE_LONG 0x60 (THIS BOR BIT0)
+BUT_ONLY IF_EXISTS
+
+COPY_EXISTING ~partyai.2da~ ~override~
+REPLACE_TEXTUALLY ~\([ %TAB%]+\)BD[A-Z]+[ %TAB%]*~ ~\1DEFAULT~
+BUT_ONLY
+
+END
+
+
+COPY_EXISTING ~ar0602.bcs~ ~override~ // irenicus's dungeon
+              ~ar2600.bcs~ ~override~ // candlekeep
+              ~ar4000.bcs~ ~override~ // tob heads
+DECOMPILE_AND_PATCH BEGIN
+	REPLACE_TEXTUALLY ~[ %TAB%]Global("BD_DEFAI","\(MYAREA\|GLOBAL\)",0)~ ~ False()~ // nuke block that assigns 'advanced ai' to player1
+END
+BUT_ONLY IF_EXISTS
+
+/////////////////////////////////////////
+///////////////////////////////BEGIN TEXT CHANGES
+/////////////////////////////////////////
+
+OUTER_FOR (index = 0 ; index < NEXT_STRREF ; ++index) BEGIN
+
+	ACTION_GET_STRREF_S index contentX
+	ACTION_GET_STRREF index contentY
+ 
+	OUTER_PATCH_SAVE contentXZ ~%contentY%~ BEGIN
+		REPLACE_TEXTUALLY ~\bSave vs. Breath Weapon\b~ ~Save vs. Reflex~
+		REPLACE_TEXTUALLY ~\bsave vs. breath weapons\b~ ~save vs. reflex~
+		REPLACE_TEXTUALLY ~\bvs. Breath\b~ ~vs. Reflex~
+		REPLACE_TEXTUALLY ~\bversus breath weapon\b~ ~versus reflex~
+		REPLACE_TEXTUALLY ~\b\(Move Silently:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Hide In Shadows:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Open Locks:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Pick Pockets:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Find Traps:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Set Traps:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+		REPLACE_TEXTUALLY ~\b\(Detect Illusion:[ ]+\+[-0-9]+\)[\%]\b~ ~\1~
+	END
+ 
+	STRING_SET_EVALUATE index ~%contentXZ%~ [%contentX%]
+
+END
+
+/////////////////////////////////////////
+///////////////////////////////BEGIN PREVENT PERMA
+/////////////////////////////////////////
+
+BEGIN ~Prevent Permadeath Normal (check readme for details before installing)~
+DESIGNATED 10
+SUBCOMPONENT ~Prevent Permadeath Options~
+REQUIRE_PREDICATE (!MOD_IS_INSTALLED ~ui_ex/setup-ui_ex.TP2~ ~1~) ~Cannot be installed with EEex version~
+
+//LAF    ADD_SPLSTATE    STR_VAR    label = ~Y5OVRAI~    RET    state1 = new_ids    END
+//
+//COPY ~ui_ex/baldurhp/y5ovrai2.spl~ ~override/y5ovrai.spl~
+//	WRITE_LONG 0xd2 %state1%
+
+<<<<<<<< .../OVRRD_HP.baf
+IF
+	InParty(Player1)
+	!TriggerOverride(Player1,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player1,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player1)
+END	
+
+IF
+	InParty(Player2)
+	!TriggerOverride(Player2,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player2,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player2)
+END
+
+IF
+	InParty(Player3)
+	!TriggerOverride(Player3,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player3,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player3)
+END	
+
+IF
+	InParty(Player4)
+	!TriggerOverride(Player4,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player4,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player4)
+END	
+
+IF
+	InParty(Player5)
+	!TriggerOverride(Player5,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player5,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player5)
+END	
+
+IF
+	InParty(Player6)
+	!TriggerOverride(Player6,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player6,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player6)
+END 
+>>>>>>>>
+
+EXTEND_TOP ~baldur.bcs~ ~.../OVRRD_HP.baf~
+EXTEND_TOP ~bdbaldur.bcs~ ~.../OVRRD_HP.baf~
+EXTEND_TOP ~baldur25.bcs~ ~.../OVRRD_HP.baf~
+
+/////////////////////////////////////////
+///////////////////////////////BEGIN PREVENT EEEX
+/////////////////////////////////////////
+
+BEGIN ~Prevent Permadeath EEex (check readme for details before installing)~
+DESIGNATED 11
+SUBCOMPONENT ~Prevent Permadeath Options~
+REQUIRE_PREDICATE DIRECTORY_EXISTS ~./EEex/backup~ ~Requires UI Menu and EEex~
+
+LAF    ADD_SPLSTATE    STR_VAR    label = ~Y5OVRAI~    RET    state1 = new_ids    END
+
+COPY ~ui_ex/baldurhp/y5ovrai.spl~ ~override~
+	WRITE_LONG 0xd2 %state1%
+	WRITE_LONG 0x9a 403
+	WRITE_LONG 0x9c 2
+	WRITE_ASCII 0xae ~B3DEATH~ #8
+	
+<<<<<<<< .../OVRRD_AI.baf
+IF
+	InParty(Player1)
+	!TriggerOverride(Player1,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player1,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player1)
+END	
+
+IF
+	InParty(Player2)
+	!TriggerOverride(Player2,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player2,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player2)
+END
+
+IF
+	InParty(Player3)
+	!TriggerOverride(Player3,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player3,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player3)
+END	
+
+IF
+	InParty(Player4)
+	!TriggerOverride(Player4,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player4,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player4)
+END	
+
+IF
+	InParty(Player5)
+	!TriggerOverride(Player5,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player5,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player5)
+END	
+
+IF
+	InParty(Player6)
+	!TriggerOverride(Player6,Global("Y5OVRAI","LOCALS",1))
+THEN
+	RESPONSE #100
+		ActionOverride(Player6,SetGlobal("Y5OVRAI","LOCALS",1))
+		ForceSpellRES("Y5OVRAI",Player6)
+END 
+>>>>>>>>
+
+EXTEND_TOP ~baldur.bcs~ ~.../OVRRD_AI.baf~ EVAL
+EXTEND_TOP ~bdbaldur.bcs~ ~.../OVRRD_AI.baf~ EVAL
+EXTEND_TOP ~baldur25.bcs~ ~.../OVRRD_AI.baf~ EVAL
+
+COPY_EXISTING ~ui.menu~ ~override~
+REPLACE_TEXTUALLY ~--EXTEXT0~ ~~~~~EEex_Reset()
+
+function B3DEATH(originalEffectData, effectData, creatureData)
+    if EEex_ReadDword(effectData + 0xC) == 13 then
+        local param2 = EEex_ReadDword(effectData + 0x1C)
+        if param2 == 0x40 then
+            return true
+        elseif param2 ~= 0x4 then
+            EEex_WriteDword(effectData + 0x1C, 0x4)
+        end
+    end
+end~~~~~
+
+/////////////////////////////////////////
+///////////////////////////////SPELL MENU
+///////////////////////////////////////// 
+
+BEGIN ~Interactive Spell Menu~
+DESIGNATED 12
+REQUIRE_PREDICATE DIRECTORY_EXISTS ~./bubb_spell_menu_extended/backup~ ~Requires Spell Menu~
+
+COPY ~ui_ex/spellmenu~ ~override~
+
+/////////////////////////////////////////
+///////////////////////////////ADD GAME PORTRAITS
+///////////////////////////////////////// 
+
+BEGIN ~Add Both~
+DESIGNATED 20
+SUBCOMPONENT ~Add NPC and/or DLC Portraits~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~5~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~6~) ~Multiple versions of this component should not be installed.~
+
+COPY ~ui_ex/portraitex/ALLDLC~ ~override~
+COPY ~ui_ex/portraitex/ALLNPC~ ~override~
+
+BEGIN ~Add DLC~
+DESIGNATED 21
+SUBCOMPONENT ~Add NPC and/or DLC Portraits~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~4~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~6~) ~Multiple versions of this component should not be installed.~
+
+COPY ~ui_ex/portraitex/ALLDLC~ ~override~
+
+BEGIN ~Add NPC~
+DESIGNATED 22
+SUBCOMPONENT ~Add NPC and/or DLC Portraits~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~4~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~5~) ~Multiple versions of this component should not be installed.~
+COPY ~ui_ex/portraitex/ALLNPC~ ~override~
+
+/////////////////////////////////////////
+///////////////////////////////REMOVE MISC
+///////////////////////////////////////// 
+
+BEGIN ~Remove Both~
+DESIGNATED 30
+SUBCOMPONENT ~Remove Import Characters and/or Rest Cutsecnes~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~8~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~9~) ~Multiple versions of this component should not be installed.~
+
+
+DELETE ~./movies/rest.wbm~
+DELETE ~./movies/restdung.wbm~
+DELETE ~./movies/restinn.wbm~
+DELETE ~./characters~
+
+ACTION_IF GAME_INCLUDES ~tob~ BEGIN
+	DISABLE_FROM_KEY ~OH1FIGHT.CHR~
+	DISABLE_FROM_KEY ~OH2MAGE.CHR~
+	DISABLE_FROM_KEY ~OH3THIEF.CHR~
+	DISABLE_FROM_KEY ~OH4CLER.CHR~
+END ELSE BEGIN
+	DISABLE_FROM_KEY ~OH1FIGHT.CHR~
+	DISABLE_FROM_KEY ~02THIEF.CHR~
+	DISABLE_FROM_KEY ~03MAGE.CHR~
+	DISABLE_FROM_KEY ~04PALAD.CHR~
+	DISABLE_FROM_KEY ~05CLERIC.CHR~
+	DISABLE_FROM_KEY ~06RANGER.CHR~
+	DISABLE_FROM_KEY ~07BARB.CHR~
+	DISABLE_FROM_KEY ~08BARD.CHR~
+	DISABLE_FROM_KEY ~09FIGHTM.CHR~
+END
+
+BEGIN ~Remove Characters~
+DESIGNATED 31
+SUBCOMPONENT ~Remove Import Characters and/or Rest Cutsecnes~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~7~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~9~) ~Multiple versions of this component should not be installed.~
+
+
+ACTION_IF GAME_INCLUDES ~tob~ BEGIN
+	DISABLE_FROM_KEY ~OH1FIGHT.CHR~
+	DISABLE_FROM_KEY ~OH2MAGE.CHR~
+	DISABLE_FROM_KEY ~OH3THIEF.CHR~
+	DISABLE_FROM_KEY ~OH4CLER.CHR~
+END ELSE BEGIN
+	DISABLE_FROM_KEY ~OH1FIGHT.CHR~
+	DISABLE_FROM_KEY ~02THIEF.CHR~
+	DISABLE_FROM_KEY ~03MAGE.CHR~
+	DISABLE_FROM_KEY ~04PALAD.CHR~
+	DISABLE_FROM_KEY ~05CLERIC.CHR~
+	DISABLE_FROM_KEY ~06RANGER.CHR~
+	DISABLE_FROM_KEY ~07BARB.CHR~
+	DISABLE_FROM_KEY ~08BARD.CHR~
+	DISABLE_FROM_KEY ~09FIGHTM.CHR~
+END
+
+BEGIN ~Remove Cutscenes~
+DESIGNATED 32
+SUBCOMPONENT ~Remove Import Characters and/or Rest Cutsecnes~
+REQUIRE_PREDICATE !(MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~7~ AND MOD_IS_INSTALLED ~ui_ex/ui_ex.tp2~ ~8~) ~Multiple versions of this component should not be installed.~
+
+
+DELETE ~./movies/rest.wbm~
+DELETE ~./movies/restdung.wbm~
+DELETE ~./movies/restinn.wbm~
+DELETE ~./characters~
